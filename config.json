@@ -5,8 +5,7 @@
       "for alpha help | {guild} Guilds"
     ],
     "tokens": {
-      "main": "NjU2NzM5ODY3NDA0Nzk1OTM0.XwqlkA.56IKQUAWyijspBqsxZpD-28Dv40",
-      "development": "NjU1Mjc4MDIyNDAzOTQ4NTQ0.XwqkfQ.uLi5VBW2AOMGD9lkwUIkt2__atk",
+
       "hypixel": "b3fa6fe9-380b-440c-80a1-30e21b1fc778",
       "slothpixel": "62be11b7cde04fb78d2e5e2d94718110",
       "mongo": "mongodb+srv://admin:1234@cluster-0-rj2kv.azure.mongodb.net/test?retryWrites=true&w=majority",
