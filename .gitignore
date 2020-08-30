@@ -4,3 +4,4 @@ src/commands/owner/*
 src/events/*
 package.json
 package-lock.json
+private_images
