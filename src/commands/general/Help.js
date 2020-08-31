@@ -3,6 +3,7 @@ class Help extends Command {
     constructor(client) {
         super(client, {
             name: "help",
+            aliases: ["cmds", "command", "commands"],
             description: "View commands of Project Alpha",
             category: "General",
             autoTip: true,
@@ -11,19 +12,16 @@ class Help extends Command {
     }
     async exec(message, args, templateEmbed) {
       
-      message.channel.send(
         templateEmbed
-          .setDescription("Thank you for using **Project Alpha**,\nAn all in one Hypixel Skyblock Discord Bot to make your hypixel experience easier than ever.\n\n[Click here to invite Project Alpha to your server](https://projectalpha.cc/invite)")
-          .addField("General Commands", `General Commands to view bot statistics or sync your discord account to your MC Account. \`\`\`fix\n${this.client.commands.filter(x=>x.category == 'General').map(x=>`${x.name}`).join('\n')}\`\`\``, true)
-          .addField("Utility Commands", `View stats of a guild, user, or even use commands that may help you in the long run. \`\`\`fix\n${this.client.commands.filter(x=>x.category == 'Utility').map(x=>`${x.name}`).join('\n')}\`\`\``, true)
-          .addField("Configuration Commands", `Configurate your guild settings\`\`\`fix\nprefix\nconfig\`\`\``, true)
-          .addField("Changelog", `
-\`\`\`diff
-+ Price Command: Check an items price, with our estimated AI Searcher.
-- Removed the following: Party System, Fraud Detection
-\`\`\``)
-          .setThumbnail("https://media.discordapp.net/attachments/723816845508870254/723843661934231572/MOSHED-2020-6-20-3-11-58.gif")
-          .setFooter("Made By: Apollo#6000", 'https://cdn.discordapp.com/avatars/507408804145528832/d6d57a40eea89d2c2dfa362276a84308.png?size=2048'))
+            .setDescription("Thank you for using **Project Alpha**,\n\nAn all in one Hypixel Skyblock Discord Bot to make your hypixel experience easier than ever.\n\n[Click here to invite Project Alpha](https://projectalpha.cc/invite)")
+            .addField("<:utility:749839780518297702>   **General Commands**", `\`\`\`fix\n${this.client.commands.filter(x=>x.category=="General").map(x=>`${x.name}`).join('\n')}\`\`\``)
+            .addField("<:utility:749839780518297702>   **Utility Commands**", `\`\`\`fix\n${this.client.commands.filter(x=>x.category=="Utility").map(x=>`${x.name}`).join('\n')}\`\`\``)
+            .addField("<:utility:749839780518297702>   **Resources Used**", `[sky.lea.moe](https://sky.lea.moe) **DEPRECATED**\n[sky.shiiyu.moe](https://sky.shiiyu.moe)\n[HyAuctions](https://auctions.craftlink.xyz/)\n[Slothpixel](https://docs.slothpixel.me/)\n[Hypixel API](https://api.hypixel.net)`)
+            .setFooter(`Requested by ${message.author.tag}\nUse "alpha stats" for info about the bot.`, message.author.displayAvatarURL)
+            .setThumbnail(this.client.user.displayAvatarURL)
+            .setImage('https://top.gg/api/widget/656739867404795934.png?usernamecolor=FFFFFF&topcolor=2F3136')
+        message.channel.send(templateEmbed);
+
     }
 }
 

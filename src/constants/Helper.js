@@ -50,6 +50,22 @@ module.exports = {
         return output;
     },
 
+    hasPath: (obj, ...keys) => {
+        if(obj == null)
+            return false;
+
+        let loc = obj;
+
+        for(let i = 0; i < keys.length; i++){
+            loc = loc[getKey(keys[i])];
+
+            if(loc === undefined)
+                return false;
+        }
+
+        return true;
+    },
+
     getPlayer: async (message, player_input, profile_input) => {
         let profileChecking;
         if (player_input.startsWith("https://sky.lea.moe/stats/") || player_input.startsWith("https://sky.shiiyu.moe/stats/")) {
@@ -63,7 +79,7 @@ module.exports = {
         if (!profileChecking.player) return message.channel.send(`Seems like the user \`${player_input}\` has **never** logged into hypixel.`);
         else profileChecking = profileChecking.player;
     
-        if (!profileChecking.stats.SkyBlock) return message.channel.send(`Seems like that ${profileChecking.displayName} has **never** played Skyblock`);
+        if (!profileChecking.stats.SkyBlock) return message.channel.send(`Seems like that ${player_input} has **never** played Skyblock`);
 
         let profiles = [],
             savedProfiles = [];
@@ -72,7 +88,7 @@ module.exports = {
             savedProfiles.push({ name: profileChecking.stats.SkyBlock.profiles[x].cute_name, id: profileChecking.stats.SkyBlock.profiles[x].profile_id });
             profiles.push({ name: profileChecking.stats.SkyBlock.profiles[x].cute_name, id: profileChecking.stats.SkyBlock.profiles[x].profile_id });
         });
-        if (profiles.length == 0) return message.channel.send(`Seems like that ${profileChecking.displayName} has **never** played Skyblock`);
+        if (profiles.length == 0) return message.channel.send(`Seems like that ${player_input} has **never** played Skyblock`);
         if (!profile_input) profiles = profiles[0].id;
         if (profile_input) profiles = profiles.filter(x => x.name.toLowerCase() == profile_input.toLowerCase())[0];
         if (!profiles) return message.channel.send(`Looks like the profile \`${profile_input.titleCase()}\` does not exist for this user.`, templateEmbed.setDescription(`Available Profiles:\n${savedProfiles.map(x=>`[${PROFILE_EMOJIS[x.name]}] ${x.name}`).join('\n')}`))
@@ -83,6 +99,15 @@ module.exports = {
         if (!skyblockData.profile) return message.channel.send("There was an error when trying to fetch the users profile.");
         let profile = await skyblockData.profile.members[profileChecking.uuid];
 
-        return { profileChecking, profile };
+        return { profileChecking, profile, profiles, skyblockData, uuid: profileChecking.uuid, player_name: profileChecking.displayname };
     }
+}
+
+function getKey(key){
+    const intKey = new Number(key);
+
+    if(!isNaN(intKey))
+        return intKey;
+
+    return key;
 }

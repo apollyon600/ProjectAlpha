@@ -1,6 +1,7 @@
 const { Client, Collection } = require("discord.js");
 const Logger = require("@ayana/logger");
 const config = require('../../config.json');
+const functions = require("../constants/Functions.js");
 const { MongoClient } = require('mongodb');
 const Mongo = new MongoClient(config.tokens.mongo, { useNewUrlParser: true, useUnifiedTopology: true });
 class ClientStructure extends Client {
@@ -11,9 +12,10 @@ class ClientStructure extends Client {
         this.aliases = new Collection();
         this.events = new Collection();
         this.settings = {
-            color: "#5CB3FF",
+            color: "#6283d9",
             disabledCommands: [],
         }
+        this.func = functions;
 
         this.storage = {
             eval: new Map(),

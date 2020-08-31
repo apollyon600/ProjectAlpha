@@ -94,7 +94,10 @@ class Networth extends Command {
                                 msg.edit(update_embed.setDescription(`      
 **Renewed ${total - queue.length}/${total} items/blocks to the database!**
 **Success**: ${success} | **Failed**: ${failed}
-**Estimated Time**: ${prettyms(1000 * queue.length, { verbose: true })}`).addField("Logs", `\`\`\`diff\n${logs.slice(0, 20)}\`\`\``));
+**Estimated Time**: ${prettyms(1000 * queue.length, { verbose: true })}
+
+**Logs**:
+\`\`\`diff\n${logs.reverse().slice(0, 25).join('\n')}\`\`\``));
                                 client.comp('mongo').prices.updateOne({ id: "prices" }, { $set: { db: database }});
                             }
                             // console.log(`Added ${fetched.name} to the database - $${fetched.price} | ${queue.length} Items Left`)
@@ -113,13 +116,13 @@ class Networth extends Command {
                 }
         
                 let data = await Helper.getPlayer(message, args[0], args[1]);
-                //console.log(util.inspect(data, { "depth": 0 }));
                 let profile = data.profile;
+                let profiles = data.profiles;
+                let skyblockData = data.skyblockData;
                 let profileChecking = data.profileChecking;
                 let items = await lib.getItems(profile);
                 let stats = await lib.getStats(profile, items, profileChecking);
 
-                console.log(profileChecking.stats)
                 if (items.no_inventory) return message.channel.send(`Sorry, I couldn't calculate the networth of **${profileChecking.displayname} [\`${PROFILE_EMOJIS[profileChecking.stats.SkyBlock.profiles[profiles].cute_name]} ${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}\`]** because their API is disabled.`)
         
                 let tempMessage = await message.channel.send(`Calculating networth for **${profileChecking.displayname} [\`${PROFILE_EMOJIS[profileChecking.stats.SkyBlock.profiles[profiles].cute_name]} ${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}\`]**`);
@@ -159,6 +162,8 @@ class Networth extends Command {
                                 if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
                                 let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
                                 if (!item_name) return;
+
+                                // console.log(item_name);
         
                                 let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
                                 array = array.filter(x=>x.startsWith("COMMON"))[0];
@@ -380,7 +385,7 @@ class Networth extends Command {
                     } else return;
                 });
                 
-                console.log(stats.dungeons)
+                // console.log(stats.dungeons)
         
                 // Pushing pets to the pets array.
                 if (stats.pets.length > 0) stats.pets.forEach(async pet => {
@@ -416,7 +421,6 @@ class Networth extends Command {
                     templateEmbed
                         .setAuthor(`Networth Calculator for\n${profileChecking.displayname} ${rankTitle ? `[${rankTitle}] ` : ""}[${PROFILE_EMOJIS[profileChecking.stats.SkyBlock.profiles[profiles].cute_name]} ${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}]`, `https://mc-heads.net/avatar/${profileChecking.displayname}`, `https://sky.shiiyu.moe/stats/${profileChecking.displayname}/${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}`)
                         .setThumbnail(`https://mc-heads.net/avatar/${profileChecking.displayname}`)
-                        .setColor(ranks[rank] ? ranks[rank].color : "#FFFFFF")
                         .setDescription(`
 ${await client.getEmoji('coin', 'string')} Purse: $${Math.floor(profile.coin_purse).toLocaleString()}
 ${await client.getEmoji('bank', 'string')} Bank: ${!skyblockData.profile.banking ? "Bank API is **disabled**" : `$${Math.floor(skyblockData.profile.banking.balance).toLocaleString()}` }

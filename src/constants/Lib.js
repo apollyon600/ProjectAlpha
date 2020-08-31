@@ -488,14 +488,14 @@ module.exports = {
         } else {
             skillLevels = {
                 taming: -1,
-                farming: hypixelProfile.achievements.skyblock_harvester || 0,
-                mining: hypixelProfile.achievements.skyblock_excavator || 0,
-                combat: hypixelProfile.achievements.skyblock_combat || 0,
-                foraging: hypixelProfile.achievements.skyblock_gatherer || 0,
-                fishing: hypixelProfile.achievements.skyblock_angler || 0,
-                enchanting: hypixelProfile.achievements.skyblock_augmentation || 0,
+                farming: hypixelProfile ? hypixelProfile.achievements.skyblock_harvester : 0,
+                mining: hypixelProfile ? hypixelProfile.achievements.skyblock_excavator : 0,
+                combat: hypixelProfile ? hypixelProfile.achievements.skyblock_combat :  0,
+                foraging: hypixelProfile ? hypixelProfile.achievements.skyblock_gatherer :  0,
+                fishing: hypixelProfile ? hypixelProfile.achievements.skyblock_angler : 0,
+                enchanting: hypixelProfile ? hypixelProfile.achievements.skyblock_augmentation : 0,
                 carpentry: -1,
-                alchemy: hypixelProfile.achievements.skyblock_concoctor || 0,
+                alchemy: hypixelProfile ? hypixelProfile.achievements.skyblock_concoctor : 0,
                 runecrafting: -1
             };
     
@@ -1371,7 +1371,7 @@ async function getDungeons(userProfile, hypixelProfile) {
 
     output.boss_collections = collections;
 
-    output.secrets_found = hypixelProfile.achievements.skyblock_treasure_hunter || 0;
+    output.secrets_found = hypixelProfile ? hypixelProfile.achievements.skyblock_treasure_hunter : 0;
 
     return output;
 }
