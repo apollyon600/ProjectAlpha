@@ -8,20 +8,7 @@ CommandLoader.loadCommands(client);
 CommandLoader.loadEvents(client);
 client.start();
 
-if (config.tokens.main == client.token) {
-    const dbl = new DBL(config.tokens.DBL, client);
-    dbl.on('posted', () => {
-            Logger.get("DBL / top.gg").info(`Server Count Posted`);
-    });
-    
-    dbl.on('error', e => {
-        Logger.get("DBL / top.gg").info(`An error occured with DBL:\n${e}`);
-    });
-
-    String.prototype.getDBL = function() {
-        return dbl;
-    }
-}
+Logger.get("indexjs").info("index.js Successfully Loaded.")
 
 String.prototype.titleCase = function() {
     var splitStr = this.toLowerCase()
@@ -33,3 +20,20 @@ String.prototype.titleCase = function() {
     }
     return splitStr.join(" ");
 };
+
+if (config.tokens.main == client.token) {
+    try {
+        const dbl = new DBL(config.tokens.DBL, client);
+        dbl.on('posted', () => {
+            Logger.get("top.gg").info(`Server Count Posted`);
+        });
+        
+        String.prototype.getDBL = function() {
+            return dbl;
+        }
+    } catch (e) {
+        Logger.get("top.gg").info(`An error occured with DBL:\n${e}`);
+    }
+}
+
+

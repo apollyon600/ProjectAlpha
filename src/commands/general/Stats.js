@@ -33,13 +33,13 @@ class Stats extends Command {
             .setThumbnail(this.client.user.displayAvatarURL)
             .addField("Top 10 Guilds", `
 \`\`\`fix
-\n${this.client.guilds.filter(x=>x.id != "264445053596991498").sort(function(a, b){return b.memberCount - a.memberCount}).map(x=>`${x.name} - ${x.memberCount} Members`).slice(0, 10).join("\n")}\`\`\``)
+\n${this.client.guilds.filter(x=>x.id != "264445053596991498").sort(function(a, b){return b.memberCount ? b.memberCount : 0 - a.memberCount ? a.memberCount : 0}).map(x=>`${x.name} - ${x.memberCount} Members`).slice(0, 10).join("\n")}\`\`\``)
             .addField("**Bot Statistics**", `
 \`\`\`fix
 • Uptime: ${this.client.func.prettyms(this.client.uptime)}
-• Guilds: ${this.client.guilds.size.toLocaleString()}
-• Users: ${this.client.guilds.reduce((a, b) => a.memberCount + b.memberCount).toLocaleString()}
-• Channels: ${this.client.guilds.reduce((a, b) => a.channels.size + b.channels.size).toLocaleString()}\`\`\``)
+• Guilds: ${this.client.guilds ? this.client.guilds.size.toLocaleString() : "Failed to fetch"}
+• Users: ${this.client.guilds ? this.client.guilds.reduce((a, b) => a.memberCount ? a.memberCount : 0 + b.memberCount ? b.memberCount : 0).toLocaleString() : "Failed to fetch"}
+• Channels: ${this.client.guilds ? this.client.guilds.reduce((a, b) => a.channels ? a.channels.size : 0 + b.channels ? b.channels.size : 0).toLocaleString() : "Failed to fetch"}\`\`\``)
             .addField("**Bot Information**", `
 \`\`\`fix
 • CPU: ${percentRAM.toFixed(2)}%
