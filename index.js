@@ -2,7 +2,7 @@ const { ClientStructure } = require("./src/structures/ClientStructure.js");
 const { CommandLoader } = require("./src/structures/CommandLoader.js");
 const config = require('./config.json');
 const Logger = require("@ayana/logger");
-const client = new ClientStructure(config.tokens.development);
+const client = new ClientStructure(config.tokens.main);
 const DBL = require("dblapi.js");   
 CommandLoader.loadCommands(client);
 CommandLoader.loadEvents(client);

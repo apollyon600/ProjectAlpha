@@ -251,10 +251,10 @@ ${playedSven ? `${await this.client.getEmoji('sven', 'string')} Sven Packmaster 
             .setDescription(`Average Skill Level: ${stats.average_level.toFixed(2).toLocaleString()}
 ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profiles.\n[Enable Skills API](https://sky.lea.moe/resources/video/enable_api.webm) for accurate data.*\n` : ""}`)
 
-            let skills = ["Taming", "Mining", "Foraging", "Enchanting", "Carpentry", "Farming", "Combat", "Fishing", "Alchemy", "Taming", "Runecrafting"];
+            let skills = ["Taming", "Mining", "Foraging", "Enchanting", "Carpentry", "Farming", "Combat", "Fishing", "Alchemy", "Runecrafting"];
             for (let i = 0; i < skills.length; i++) {
                 page2.addField(
-                    `${stats.levels[skills[i].toLowerCase()].level == -1 ? `${skills[i]} **0**` : `${skills[i]} **${stats.levels[skills[i].toLowerCase()].level}**`}`,
+                    `${await this.client.getEmoji(skills[i].toLowerCase(), 'string')}   ${stats.levels[skills[i].toLowerCase()].level == -1 ? `${skills[i]} **0**` : `${skills[i]} **${stats.levels[skills[i].toLowerCase()].level}**`}`,
                     `\`${stats.levels[skills[i].toLowerCase()].xpCurrent.toLocaleString()} XP\` / \`${stats.levels[skills[i].toLowerCase()].xpForNext == Infinity ? 'MAXED' : stats.levels[skills[i].toLowerCase()].xpForNext.toLocaleString()} XP\` **(${stats.levels[skills[i].toLowerCase()].xpForNext == Infinity ? "100" : (stats.levels[skills[i].toLowerCase()].progress * 100).toFixed(0)}%)**\n${await getBar(stats.levels[skills[i].toLowerCase()].xpCurrent, stats.levels[skills[i].toLowerCase()].xpForNext)}`,
                     false
                 )
@@ -294,56 +294,58 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
                         page3.addField(`Page ${i + 1}`, arr[i]);
                     }
                 }
-            } else page3.setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*\n\n" + invstring)
+            } else page3.setDescription(invstring)
 
             if (armorstring.length > 2000) {
                 let arr = split(armorstring);
                 if (arr.length > 1) {
                     for (let i = 0; i < arr.length; i++) {
-                        page4.addField(`Page ${i + 1}`, arr[i]).setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*");
+                        page4.addField(`Page ${i + 1}`, arr[i])
                     }
                 }
-            } else page4.setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*\n\n" + armorstring)
+            } else page4.setDescription(armorstring)
             
             if (enderstring.length > 2000) {
                 let arr = split(enderstring);
                 if (arr.length > 1) {
                     for (let i = 0; i < arr.length; i++) {
-                        page5.addField(`Page ${i + 1}`, arr[i]).setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*");
+                        page5.addField(`Page ${i + 1}`, arr[i])
                     }
                 }
-            } else page5.setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*\n\n" + enderstring)
+            } else page5.setDescription(enderstring)
 
             if (talisstring.length > 2000) {
                 let arr = split(talisstring);
                 if (arr.length > 1) {
                     for (let i = 0; i < arr.length; i++) {
-                        page6.addField(`Page ${i + 1}`, arr[i]).setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*");
+                        page6.addField(`Page ${i + 1}`, arr[i])
                     }
                 }
-            } else page6.setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*\n\n" + talisstring)
+            } else page6.setDescription(talisstring)
 
             if (petstring.length > 2000) {
                 let arr = split(petstring);
                 if (arr.length > 1) {
                     for (let i = 0; i < arr.length; i++) {
-                        page7.addField(`Page ${i + 1}`, arr[i]).setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*");
+                        page7.addField(`Page ${i + 1}`, arr[i])
                     }
                 }
-            } else page7.setDescription("**Tip**:\n*PC users can hover over the blue text for a list of enchants in an item*\n\n" + petstring)
+            } else page7.setDescription(petstring)
         
         let pages = [ { title: "Player Statistics", embed: page1 }, { title: "Player Skills", embed: page2}, { title: "Inventory", embed: page3 }, { title: "Armor", embed: page4 }, { title: "Ender Chest", embed: page5 }, { title: "Accessories", embed: page6 }, { title: "Pets", embed: page7 } ];
         tempMessage.delete()
         let msg = await message.channel.send(page1.setTitle(data.player_name + ` | Player Statistics`).setFooter(`React below to scroll pages\nPage 1/${pages.length}`, message.author.displayAvatarURL))
 
         // console.log(pages)
-        msg.react("⏪").then(() => msg.react("⏩"));
+        msg.react("⏪").then(() => msg.react("⏩").then(() => msg.react("⏸️")));
 
         const forwardFilter = (reaction, user) => reaction.emoji.name == "⏩" && user.id == message.author.id;
         const backwardFilter = (reaction, user) => reaction.emoji.name == "⏪" && user.id == message.author.id;
+        const pauseFilter = (reaction, user) => reaction.emoji.name == "⏸️" && user.id == message.author.id;
 
         const forward = msg.createReactionCollector(forwardFilter, { time: 120000 });
         const backward = msg.createReactionCollector(backwardFilter, { time: 120000 });
+        const pause = msg.createReactionCollector(pauseFilter, { time: 120000 });
 
         forward.on("collect", r => {
             if (page == pages.length) {
@@ -373,17 +375,21 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
             if (msg.reactions.get("⏩")) msg.reactions.get("⏩").removeAll()
         });
 
+        pause.on("collect", r => {
+            msg.edit(templateEmbed.setFooter("Session Force Ended at").setTimestamp());
+        })
+
         async function getBar(current, max) {
-            if (max == Infinity) return "<:goldbar1:749515798770614322><:goldbar2:749515798523019285><:goldbar2:749515798523019285><:goldbar2:749515798523019285><:goldbar2:749515798523019285><:goldbar2:749515798523019285><:goldbar2:749515798523019285><:goldbar2:749515798523019285><:goldbar2:749515798523019285><:goldbar3:749515798678208572>";
+            if (max == Infinity) return "<:goldbar1:750188483624304700><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar3:750188483641081867>";
 
             let progress = Math.floor((current / max) * 100);
-            let bluebar1 = "<:bluebar1:749515798628007957>",
-                bluebar2 = "<:bluebar2:749515798703243274>",
-                bluebar3 = "<:bluebar3:749515798317629461>",
-                bluebar4 = "<:bluebar4:749527821507887184>",
-                graybar1 = "<:graybar1:749522063793848380>",
-                graybar2 = "<:graybar2:749522063798173726>",
-                graybar3 = "<:graybar3:749527821487177759>";
+            let bluebar1 = "<:bluebar1:750192448503808042>",
+                bluebar2 = "<:bluebar2:750192448755728484>",
+                bluebar3 = "<:bluebar3:750192448600408069>",
+                bluebar4 = "<:bluebar4:750192448751534123>",
+                graybar1 = "<:graybar1:750188483628236810>",
+                graybar2 = "<:graybar2:750188483695345757>",
+                graybar3 = "<:graybar3:750188483624173608>";
             
 
             var progressbar = "";
@@ -428,4 +434,4 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
     }
 }
 
-module.exports = Player;   
+module.exports = Player;

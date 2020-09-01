@@ -17,6 +17,16 @@ class Stats extends Command {
         let RamTotal = (os.totalmem() / 1024 / 1024).toFixed(2);
         let percentRAM = RamUsages / RamTotal * 100;
 
+        
+        if (['cmd', 'cmds', 'commands'].includes(args[0])) {
+            let commands = await this.client.comp("mongo").database.findOne({id:"commands"}).then(x=>x.commandsUsed);
+            let array = [], commandsArray = Object.entries(commands);
+            commandsArray.forEach(x => { if (parseInt(x[1])) array.push(x); });
+            return message.channel.send(
+                templateEmbed
+                    .setTitle("Command Statistics")
+                    .setDescription(`\`\`\`js\n${array.map(x=>`${x[0].titleCase()}: ${x[1]} Uses`).join('\n')}\`\`\``))
+        }
         templateEmbed
             .setDescription(`**RAM USAGE**: ${RamUsages}MB/${RamTotal}MB`)
             .setAuthor("Project Alpha's Statistics", this.client.user.displayAvatarURL)
