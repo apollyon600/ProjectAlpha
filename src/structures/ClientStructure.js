@@ -42,9 +42,9 @@ class ClientStructure extends Client {
     }
 
     start() {
-        this.login(this.token);
+        this.login(this.token).catch(err => console.log(err));
     }
-
+    
     async getEmoji(name, type) {
         let emoji = this.guilds.get("731355261822042162").emojis.find(emoji => emoji.name == name);
         if (!emoji) return;

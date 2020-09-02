@@ -1,6 +1,5 @@
 node_modules/*
 config.json
 src/commands/owner/*
-src/events/*
 private_images
 package-lock.json
