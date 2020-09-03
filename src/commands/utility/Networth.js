@@ -264,7 +264,6 @@ class Networth extends Command {
                     let enchantments = [];
                     if (item.tag.ExtraAttributes.enchantments) enchantments = Object.entries(item.tag.ExtraAttributes.enchantments);
                     if (enchantments.length > 0) enchantments.forEach(async x => {
-                        console.log(x)
                         let roman = this.client.romanize(x[1]);
                         if (roman && ENCHANTMENTS[x[0].titleCase().replace(/ /g, "_")]) item_price += ENCHANTMENTS[x[0].toUpperCase().replace(/ /g, "_")][roman];
                     });
@@ -305,7 +304,6 @@ class Networth extends Command {
                     let enchantments = [];
                     if (item.tag.ExtraAttributes.enchantments) enchantments = Object.entries(item.tag.ExtraAttributes.enchantments);
                     if (enchantments.length > 0) enchantments.forEach(async x => {
-                        this.client.utils(x, 1, true)
                         let roman = this.client.romanize(x[1]);
                         if (roman && ENCHANTMENTS[x[0].titleCase().replace(/ /g, "_")]) item_price += ENCHANTMENTS[x[0].toUpperCase().replace(/ /g, "_")][roman];
                     });

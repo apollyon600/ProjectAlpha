@@ -424,6 +424,7 @@ module.exports = {
         let output = {};
         output.stats = Object.assign({}, constants.base_stats);
     
+        profile.fairy_souls_collected = profile.fairy_souls_collected && profile.fairy_souls_collected ? profile.fairy_souls_collected : 0
         if (isNaN(profile.fairy_souls_collected))
             profile.fairy_souls_collected = 0;
     

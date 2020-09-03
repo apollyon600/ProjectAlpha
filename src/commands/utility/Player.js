@@ -15,7 +15,7 @@ class Player extends Command {
     constructor(client) {
         super(client, {
             name: "player",
-            aliases: ["players", "plr"],
+            aliases: ["players", "plr", "prof", "profile", "profiles"],
             description: "View a skyblock players profile.",
             category: "Utility",
             needsAPI: true,

@@ -30,7 +30,7 @@
     "walk": "^2.3.14"
   },
   "engines": {
-    "node": "8.x"
+    "node": "12.x"
   },
   "repository": {
     "url": "https://github.com/apollyon600/projectalpha"
