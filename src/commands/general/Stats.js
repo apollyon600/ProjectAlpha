@@ -42,9 +42,9 @@ class Stats extends Command {
             .addField("**Bot Statistics**", `
 \`\`\`fix
 • Uptime: ${this.client.func.prettyms(this.client.uptime)}
-• Guilds: ${this.client.guilds ? this.client.guilds.cache.size.toLocaleString() : "Failed to fetch"}
-• Users: ${this.client.guilds ? this.client.guilds.cache.map(x=>x.members.cache.size).reduce((a, b) => a + b).toLocaleString() : "Failed to fetch"}
-• Channels: ${this.client.guilds ? this.client.guilds.cache.map(x=>x.channels.cache.size).reduce((a, b) => a + b).toLocaleString() : "Failed to fetch"}
+• Guilds: ${this.client.guilds.cache.size.toLocaleString()}
+• Users: ${this.client.guilds.cache.filter(x=>x.available).map(x=>x.members.cache.size).reduce((a, b) => a + b).toLocaleString()}
+• Channels: ${this.client.guilds.cache.filter(x=>x.available).map(x=>x.channels.cache.size).reduce((a, b) => a + b).toLocaleString()}
 • Commands Ran: ${commands}\`\`\``)
             .addField("**Bot Information**", `
 \`\`\`fix
