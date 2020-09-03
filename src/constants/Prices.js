@@ -1,102 +1,276 @@
 module.exports = {
-
     ENCHANTMENTS: {
-        SHARPNESS: {
-            I: 1000,
-            II: 5000,
-            III: 10000,
-            IV: 15000,
-            V: 20000,
-            VI: 13000000
-        },
-        CRITICAL: {
-            I: 10000,
-            II: 25000,
-            III: 50000,
-            IV: 350000,
-        },
-        DRAGON_HUNTER: {
-            I: 1000000,
-            II: 2000000,
-            III: 4000000,
-            IV: 8000000,
-            V: 16000000
-        },
-        ENDER_SLAYER: {
-            I: 1000,
-            II: 5000,
-            III: 15000,
-            IV: 25000,
-            V: 30000,
-            VI: 1500000
+        // Weapons
+	  // Do not troll, I will slap you across the face and possibly ddos you
+        BANE_OF_ARTHROPODS: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
         },
         LUCK: {
-            I: 5000,
-            II: 10000,
-            III: 15000,
-            IV: 20000,
-            V: 25000,
-            VI: 120000
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
+        },
+        CRITICAL: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
+        },
+        ULTIMATE_COMBO: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+        },
+        CLEAVE: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
         },
         LOOTING: {
-            I: 5000,
-            II: 10000,
-            III: 15000,
-            IV: 200000,
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 80000,
         },
         SCAVENGER: {
-            I: 5000,
-            II: 10000,
-            III: 20000,
-            IV: 50000
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+        },
+        TELEKINESIS: {
+            I: 0
+        },
+        VAMPIRISM: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
+        },
+        EXPERIENCE: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
         },
         LIFE_STEAL: {
-            II: 25000,
-            III: 45000
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+        },
+        EXECUTE: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
         },
         GIANT_KILLER: {
-            I: 1000,
-            II: 5000,
-            III: 10000,
-            IV: 15000,
-            V: 20000,
-            VI: 8000000
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
+        },
+        FIRST_STRIKE: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
+        },
+        VENOMOUS: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
+        },
+        LETHALITY: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+        },
+        IMPALING: {
+            I: 0,
+            II: 0,
+            III: 0,
+        },
+        DRAGON_HUNTER: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+        },
+        PIERCING: {
+            I: 0,
+        },
+        INFINITE_QUIVER: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0,
+            VII: 0,
+            VIII: 0,
+            IX: 0,
+            X: 0
+        },
+        ULTIMATE_WISE: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0
+        },
+        SNIPE: {
+            I: 0,
+            II: 0,
+            III: 0,
         },
         POWER: {
-            I: 5000,
-            II: 10000,
-            III: 15000,
-            IV: 20000,
-            V: 25000,
-            VI: 4500000
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
         },
-    
-        // Armor
-        GROWTH: {
-            I: 1000,
-            II: 2000,
-            III: 4000,
-            IV: 8000,
-            V: 25000,
-            VI: 1500000
+        AIMING: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+        },
+        CUBISM: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+        },
+        ENDER_SLAYER: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
+        },
+        THUNDERLORD: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+        },
+ 
+        // Armor ;-;
+        ULTIMATE_WISDOM: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+        },
+        REJUVENATE: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
         },
         PROTECTION: {
-            I: 500,
-            II: 1000,
-            III: 2500,
-            IV: 5000,
-            V: 10000,
-            VI: 1500000
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
         },
-        THORNS: {
-            I: 10000,
-            II: 25000,
-            III: 50000
+        GROWTH: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0
+        },
+        RESPIRATION: {
+            I: 0,
+            II: 0,
+            III: 0,
+        },
+        AQUA_AFFINITY: {
+            I: 0,
+        },
+        ULTIMATE_WISDOM: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
         },
         TRUE_PROTECTION: {
-            I: 1000000
-        }
-    },
+            I: 0,
+        },
+        THORNS: {
+            I: 0,
+            II: 0,
+            III: 0,
+        },
+        DEPTH_STRIDER: {
+            I: 0,
+            II: 0,
+            III: 0,
+        },
+        FEATHER_FALLING: {
+            I: 0,
+            II: 0,
+            III: 0,
+            IV: 0,
+            V: 0,
+            VI: 0,
+            VII: 0,
+            VIII: 0,
+            IX: 0,
+            X: 0
+        },
+        SUGAR_RUSH: {
+            I: 0,
+            II: 0,
+            III: 0,
+        },
+    }
+
+,
 
     // Talismans
     TALISMANS: {

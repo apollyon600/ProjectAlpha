@@ -12,11 +12,10 @@ class ClientStructure extends Client {
         this.aliases = new Collection();
         this.events = new Collection();
         this.settings = {
-            color: "#6283d9",
+            color: this.token == config.tokens.development ? "#E6782B" : "#6283d9",
             disabledCommands: [],
         }
         this.func = functions;
-
         this.storage = {
             eval: new Map(),
             cooldown: new Collection()
@@ -45,6 +44,13 @@ class ClientStructure extends Client {
         this.login(this.token).catch(err => console.log(err));
     }
     
+    utils(object, depth, consoled) {
+        if (!consoled) consoled = false;
+        if (isNaN(depth)) depth = 0;
+        if (consoled) console.log(require('util').inspect(object, { depth }));
+        return require('util').inspect(object, { depth });
+    }
+
     async getEmoji(name, type) {
         let emoji = this.guilds.cache.get("731355261822042162").emojis.cache.find(emoji => emoji.name == name);
         if (!emoji) return;

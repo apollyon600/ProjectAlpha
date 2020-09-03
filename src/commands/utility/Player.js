@@ -238,8 +238,8 @@ ${await this.client.getEmoji('fairysoul', 'string')} Fairy Souls Collected: ${pr
 ${await this.client.getEmoji('coin', 'string')} Purse: ${Math.floor(profile.coin_purse).toLocaleString()}
 ${skyblockData.profile.banking ? `${await this.client.getEmoji('bank', 'string')} Bank: ${Math.floor(skyblockData.profile.banking.balance).toLocaleString()}` : ''}`)
             .addField("Slayers", `
-${!playedSlayers ? `\`\`\`diff\n- ${data.player_name} has never played slayers\`\`\`` : `　- **Total Slayer XP**: ${stats.slayer_xp.toLocaleString()} XP
-　- **Total Coins Spent**: ${stats.slayer_coins_spent.total.toLocaleString()} Coins
+${!playedSlayers ? `\`\`\`diff\n- ${data.player_name} has never played slayers\`\`\`` : `**Total Slayer XP**: ${stats.slayer_xp.toLocaleString()} XP
+**Total Coins Spent**: ${stats.slayer_coins_spent.total.toLocaleString()} Coins
 
 ${playedZombie ? `${await this.client.getEmoji('revenant', 'string')} Revenant Horror **${stats.slayers.zombie.level.currentLevel}**:  \`${stats.slayers.zombie.level.xp.toLocaleString()} XP\` / \`${stats.slayers.zombie.level.xpForNext == 0 ? "MAXED" : stats.slayers.zombie.level.xpForNext.toLocaleString()} XP\` **(${(stats.slayers.zombie.level.progress * 100).toFixed(0) > 100 ? `100%` : `${(stats.slayers.zombie.level.progress * 100).toFixed(0)}%`})**` : `${profileChecking.displayname} has never played revenant slayers.`}
 ${playedSpider ? `${await this.client.getEmoji('tarantula', 'string')} Tarantula BroodFather **${stats.slayers.spider.level.currentLevel}**:  \`${stats.slayers.spider.level.xp.toLocaleString()} XP\` / \`${stats.slayers.spider.level.xpForNext == 0 ? "MAXED" : stats.slayers.spider.level.xpForNext.toLocaleString()} XP\` **(${(stats.slayers.spider.level.progress * 100).toFixed(0) > 100 ? `100%` : `${(stats.slayers.spider.level.progress * 100).toFixed(0)}%`})**` : `${profileChecking.displayname} has never played tarantula slayers.`}
@@ -254,11 +254,11 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
             let skills = ["Taming", "Mining", "Foraging", "Enchanting", "Carpentry", "Farming", "Combat", "Fishing", "Alchemy", "Runecrafting"];
             for (let i = 0; i < skills.length; i++) {
                 page2.addField(
-                    `${await this.client.getEmoji(skills[i].toLowerCase(), 'string')}   ${stats.levels[skills[i].toLowerCase()].level == -1 ? `${skills[i]} **0**` : `${skills[i]} **${stats.levels[skills[i].toLowerCase()].level}**`}`,
-                    `\`${stats.levels[skills[i].toLowerCase()].xpCurrent.toLocaleString()} XP\` / \`${stats.levels[skills[i].toLowerCase()].xpForNext == Infinity ? 'MAXED' : stats.levels[skills[i].toLowerCase()].xpForNext.toLocaleString()} XP\` **(${stats.levels[skills[i].toLowerCase()].xpForNext == Infinity ? "100" : (stats.levels[skills[i].toLowerCase()].progress * 100).toFixed(0)}%)**\n${await getBar(stats.levels[skills[i].toLowerCase()].xpCurrent, stats.levels[skills[i].toLowerCase()].xpForNext)}`,
-                    false
+                    `${await this.client.getEmoji(skills[i].toLowerCase(), 'string')}   ${stats.levels[skills[i].toLowerCase()].level == -1 ? `${skills[i]} **0**` : `${skills[i]} **${stats.levels[skills[i].toLowerCase()].level}**`} **(${stats.levels[skills[i].toLowerCase()].xpForNext == Infinity ? "100" : (stats.levels[skills[i].toLowerCase()].progress * 100).toFixed(0)}%)**`,
+                    `\`${stats.levels[skills[i].toLowerCase()].xpCurrent.toLocaleString()} XP\` / \`${stats.levels[skills[i].toLowerCase()].xpForNext == Infinity ? 'MAXED' : stats.levels[skills[i].toLowerCase()].xpForNext.toLocaleString()} XP\`\n${await getBar(stats.levels[skills[i].toLowerCase()].xpCurrent, stats.levels[skills[i].toLowerCase()].xpForNext)}`,
+                    true
                 )
-                // if ([1, 3, 5, 7, 9, 11].includes(i)) page2.addBlankField()
+                if ([1, 3, 5, 7, 9, 11].includes(i)) page2.addField("⠀", "⠀", true);
             }
 
         let page3 = new MessageEmbed()
@@ -281,10 +281,10 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
             .setColor(this.client.settings.color)
             .setThumbnail(`https://mc-heads.net/avatar/${data.player_name}`)
 
-        let invstring = `${inventory.map(x=>x.lore.length > 0 ? `[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name}](https://projectalpha.cc "${x.lore.join(",\n")}\n${x.isRecomb ? "(Recombobulated)": ""}")` : `${x.count > 1 ? `**x${x.count}** ` : ""}${x.rarity ? x.rarity : ""} ${x.name}`).join("\n")}`,
-            armorstring = `${armor.map(x=>x.lore.length > 0 ? `[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name}](https://projectalpha.cc "${x.lore.join(",\n")}\n${x.isRecomb ? "(Recombobulated)": ""}")` : `${x.count > 1 ? `**x${x.count}** ` : ""}${x.rarity} ${x.name}`).join("\n")}`,
-            enderstring = `${enderchest.map(x=>x.lore.length > 0 ? `[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name}](https://projectalpha.cc "${x.lore.join(",\n")}\n${x.isRecomb ? "(Recombobulated)": ""}")` : `${x.count > 1 ? `**x${x.count}** ` : ""}${x.rarity} ${x.name}`).join("\n")}`,
-            talisstring = `${talismans.map(x=>x.lore.length > 0 ? `[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name}](https://projectalpha.cc "${x.lore.join(",\n")}\n${x.isRecomb ? "(Recombobulated)": ""}")` : `${x.count > 1 ? `**x${x.count}** ` : ""}${x.rarity} ${x.name}`).join("\n")}`,
+        let invstring = `${inventory.map(x=>x.lore.length > 0 ? `[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name} ${x.isRecomb ? "[**RECOMB**]": ""}](https://projectalpha.cc "${x.lore.join(",\n")}")` : `${x.count > 1 ? `**x${x.count}** ` : ""}${x.rarity ? x.rarity : ""} ${x.name} ${x.isRecomb ? "[**RECOMB**]": ""}`).join("\n")}`,
+            armorstring = `${armor.map(x=>x.lore.length > 0 ? `[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name} ${x.isRecomb ? "[**RECOMB**]": ""}](https://projectalpha.cc "${x.lore.join(",\n")}")` : `${x.count > 1 ? `**x${x.count}** ` : ""}${x.rarity} ${x.name} ${x.isRecomb ? "[**RECOMB**]": ""}`).join("\n")}`,
+            enderstring = `${enderchest.map(x=>x.lore.length > 0 ? `[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name} ${x.isRecomb ? "[**RECOMB**]": ""}](https://projectalpha.cc "${x.lore.join(",\n")}")` : `${x.count > 1 ? `**x${x.count}** ` : ""}${x.rarity} ${x.name} ${x.isRecomb ? "[**RECOMB**]": ""}`).join("\n")}`,
+            talisstring = `${talismans.map(x=>`[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name} ${x.isRecomb ? "[**RECOMB**]": ""}](https://projectalpha.cc "${x.lore.join(",\n")}")`).join("\n")}`,
             petstring = `${pets.map(x=>x.lore.length > 0 ? `[${x.count > 1 ? `**x${x.count}** ` : ""}${x.name}](https://projectalpha.cc "Held Item: ${x.lore}")` : `${x.count > 1 ? `**x${x.count}** ` : ""}${x.name}`).join("\n")}`
 
             if (invstring.length > 2000) {
@@ -331,12 +331,11 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
                     }
                 }
             } else page7.setDescription(petstring)
-        
+
         let pages = [ { title: "Player Statistics", embed: page1 }, { title: "Player Skills", embed: page2}, { title: "Inventory", embed: page3 }, { title: "Armor", embed: page4 }, { title: "Ender Chest", embed: page5 }, { title: "Accessories", embed: page6 }, { title: "Pets", embed: page7 } ];
         tempMessage.delete()
         let msg = await message.channel.send(page1.setTitle(data.player_name + ` | Player Statistics`).setFooter(`React below to scroll pages\nPage 1/${pages.length}`, message.author.displayAvatarURL()))
 
-        // console.log(pages)
         msg.react("⏪").then(() => msg.react("⏩").then(() => msg.react("⏸️")));
 
         const forwardFilter = (reaction, user) => reaction.emoji.name == "⏩" && user.id == message.author.id;
@@ -348,29 +347,39 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
         const pause = msg.createReactionCollector(pauseFilter, { time: 120000 });
 
         forward.on("collect", r => {
-            if (page == pages.length) {
-                page = 1;
+                if (page == pages.length) {
+                    page = 1;
+                    if (msg.reactions.cache.get("⏩")) msg.reactions.cache.get("⏩").users.remove(message.author)
+                    return msg.edit(page1.setTitle(`${data.player_name} | ${pages[0].title}`).setFooter(`React below to scroll pages\nPage 1/${pages.length}`, message.author.displayAvatarURL())).catch(() => {
+                        msg.edit(templateEmbed.setDescription(`Failed to load the Players ${pages[page-1].title}..\nPossibly because this player is **hella** rich..\n\nCheck out their [sky.shiiyu.moe](https://sky.shiiyu.moe/stats/${data.player_name})`).setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL()))
+                    });
+                }
+                page++;
+                msg.edit(pages[page-1].embed.setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${page}/${pages.length}`, message.author.displayAvatarURL())).catch(() => {
+                    msg.edit(templateEmbed.setDescription(`Failed to load the Players ${pages[page-1].title}..\nPossibly because this player is **hella** rich..\n\nCheck out their [sky.shiiyu.moe](https://sky.shiiyu.moe/stats/${data.player_name})`).setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL()))
+                });
                 if (msg.reactions.cache.get("⏩")) msg.reactions.cache.get("⏩").users.remove(message.author)
-                return msg.edit(page1.setTitle(`${data.player_name} | ${pages[0].title}`).setFooter(`React below to scroll pages\nPage 1/${pages.length}`, message.author.displayAvatarURL()));
-            }
-            page++;
-            msg.edit(pages[page-1].embed.setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${page}/${pages.length}`, message.author.displayAvatarURL()));
-            if (msg.reactions.cache.get("⏩")) msg.reactions.cache.get("⏩").users.remove(message.author)
         });
 
         backward.on("collect", r => {
-            if (page == 1) {
-                page = pages.length;
+                if (page == 1) {
+                    page = pages.length;
+                    if (msg.reactions.cache.get("⏪")) msg.reactions.cache.get("⏪").users.remove(message.author)
+                    return msg.edit(pages[pages.length - 1].embed.setTitle(`${data.player_name} | ${pages[pages.length - 1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL())).catch(() => {
+                        msg.edit(templateEmbed.setDescription(`Failed to load the Players ${pages[page-1].title}..\nPossibly because this player is **hella** rich..\n\nCheck out their [sky.shiiyu.moe](https://sky.shiiyu.moe/stats/${data.player_name})`).setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL()))
+                    });
+                }
+                page--;
+                msg.edit(pages[page-1].embed.setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${page}/${pages.length}`, message.author.displayAvatarURL())).catch(() => {
+                    msg.edit(templateEmbed.setDescription(`Failed to load the Players ${pages[page-1].title}..\nPossibly because this player is **hella** rich..\n\nCheck out their [sky.shiiyu.moe](https://sky.shiiyu.moe/stats/${data.player_name})`).setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL()))
+                });
                 if (msg.reactions.cache.get("⏪")) msg.reactions.cache.get("⏪").users.remove(message.author)
-                return msg.edit(pages[pages.length - 1].embed.setTitle(`${data.player_name} | ${pages[pages.length - 1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL()));
-            }
-            page--;
-            msg.edit(pages[page-1].embed.setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${page}/${pages.length}`, message.author.displayAvatarURL()));
-            if (msg.reactions.cache.get("⏪")) msg.reactions.cache.get("⏪").users.remove(message.author)
         });
 
         backward.on("end", r => {
-            msg.edit(pages[page-1].embed.setFooter("Session Ended at").setTimestamp())
+            msg.edit(pages[page-1].embed.setFooter("Session Ended at").setTimestamp()).catch(() => {
+                msg.edit(templateEmbed.setDescription(`Failed to load the Players ${pages[page-1].title}..\nPossibly because this player is **hella** rich..\n\nCheck out their [sky.shiiyu.moe](https://sky.shiiyu.moe/stats/${data.player_name})`).setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL()))
+            });
             msg.reactions.removeAll();
         });
 
@@ -380,7 +389,7 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
         })
 
         async function getBar(current, max) {
-            if (max == Infinity) return "<:goldbar1:750188483624304700><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar3:750188483641081867>";
+            if (max == Infinity) return "<:goldbar1:750188483624304700><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar2:750188483217457266><:goldbar3:750188483641081867>";
 
             let progress = Math.floor((current / max) * 100);
             let bluebar1 = "<:bluebar1:750192448503808042>",
@@ -393,9 +402,9 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
             
 
             var progressbar = "";
-            for (let i = 0; i < Math.floor(progress / 10); i++) progressbar += " " + bluebar2;
+            for (let i = 0; i < Math.floor(progress / 11); i++) progressbar += " " + bluebar2;
             if (progress != 100) progressbar += " " + bluebar4;
-            for (let i = 0; i < 9 - Math.floor(progress / 10); i++) progressbar += " " + graybar2;
+            for (let i = 0; i < 8 - Math.floor(progress / 11); i++) progressbar += " " + graybar2;
     
             let array = progressbar.split(" ");
             for (let i = 1; i < array.length; i++) {

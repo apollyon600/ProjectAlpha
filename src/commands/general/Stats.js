@@ -27,19 +27,25 @@ class Stats extends Command {
                     .setTitle("Command Statistics")
                     .setDescription(`\`\`\`js\n${array.map(x=>`${x[0].titleCase()}: ${x[1]} Uses`).join('\n')}\`\`\``))
         }
+
+        let commands = await this.client.comp("mongo").database.findOne({id:"commands"}).then(x=>x.commandsUsed);
+        commands = Object.values(commands).reduce((a, b) => a + b).toLocaleString();
+
+
         templateEmbed
             .setDescription(`**RAM USAGE**: ${RamUsages}MB/${RamTotal}MB`)
             .setAuthor("Project Alpha's Statistics", this.client.user.displayAvatarURL())
             .setThumbnail(this.client.user.displayAvatarURL())
-            .addField("Top 10 Guilds", `
+            .addField("Top 20 Guilds", `
 \`\`\`fix
-\n${this.client.guilds.cache.filter(x=>x.id != "264445053596991498").sort(function(a, b){return b.memberCount - a.memberCount}).map(x=>`${x.name} - ${x.memberCount} Members`).slice(0, 10).join("\n")}\`\`\``)
+\n${this.client.guilds.cache.filter(x=>x.id != "264445053596991498").sort((a, b) => { if (b.available) { return b.members.cache.size - a.members.cache.size; } return -1; }).map(x=>`${x.name} - ${x.members.cache.size} Members`).slice(0, 20).join("\n")}\`\`\``)
             .addField("**Bot Statistics**", `
 \`\`\`fix
 • Uptime: ${this.client.func.prettyms(this.client.uptime)}
 • Guilds: ${this.client.guilds ? this.client.guilds.cache.size.toLocaleString() : "Failed to fetch"}
-• Users: ${this.client.guilds ? this.client.guilds.cache.reduce((a, b) => a.memberCount ? a.memberCount : 0 + b.memberCount ? b.memberCount : 0).toLocaleString() : "Failed to fetch"}
-• Channels: ${this.client.guilds ? this.client.guilds.cache.reduce((a, b) => a.channels ? a.channels.cache.size : 0 + b.channels ? b.channels.cache.size : 0).toLocaleString() : "Failed to fetch"}\`\`\``)
+• Users: ${this.client.guilds ? this.client.guilds.cache.map(x=>x.members.cache.size).reduce((a, b) => a + b).toLocaleString() : "Failed to fetch"}
+• Channels: ${this.client.guilds ? this.client.guilds.cache.map(x=>x.channels.cache.size).reduce((a, b) => a + b).toLocaleString() : "Failed to fetch"}
+• Commands Ran: ${commands}\`\`\``)
             .addField("**Bot Information**", `
 \`\`\`fix
 • CPU: ${percentRAM.toFixed(2)}%

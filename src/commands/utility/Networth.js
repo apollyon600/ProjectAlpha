@@ -127,7 +127,6 @@ class Networth extends Command {
         
                 let tempMessage = await message.channel.send(`Calculating networth for **${profileChecking.displayname} [\`${PROFILE_EMOJIS[profileChecking.stats.SkyBlock.profiles[profiles].cute_name]} ${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}\`]**`);
 
-                let rank = await client.fetchRank(profileChecking);
                 let rankTitle = await client.convertRank(profileChecking);
                 let players_networth = 0;
         
@@ -138,6 +137,7 @@ class Networth extends Command {
                 database = database.db;
         
                 const HOT_POTATO_BOOK = database['Hot Potato Book'];
+                const RECOMB = 6750000;
         
                 let pets = [], armor = [], enderchest = [], talismans = [], inventory = [];
         
@@ -151,6 +151,15 @@ class Networth extends Command {
                     if (!item_price) return;
         
                     if (item.rarity == 'common' || item.rarity == 'COMMON') return;
+
+                    let isRecomb = false;
+                    if(Helper.hasPath(item, 'tag', 'ExtraAttributes', 'rarity_upgrades')){
+                        const { rarity_upgrades } = item.tag.ExtraAttributes;
+        
+                        if(rarity_upgrades > 0)
+                            isRecomb = true;
+                            item_price += RECOMB;
+                    }
         
                     // Processing Backpack
                     if (item_name.endsWith("Backpack")) {
@@ -165,9 +174,11 @@ class Networth extends Command {
 
                                 // console.log(item_name);
         
-                                let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                if (array) return;
+                                if (x.tag.value.display.value.Lore) {
+                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                                    if (array) return;
+                                }
         
                                 if (database[item_name]) {
                                     item_price += database[item_name] * x.Count.value;
@@ -181,9 +192,11 @@ class Networth extends Command {
                                 let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
                                 if (!item_name) return;
         
-                                let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                if (array) return;
+                                if (x.tag.value.display.value.Lore) {
+                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                                    if (array) return;
+                                }
         
                                 if (database[item_name]) {
                                     item_price += database[item_name] * x.Count.value;
@@ -197,9 +210,11 @@ class Networth extends Command {
                                 let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
                                 if (!item_name) return;
         
-                                let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                if (array) return;
+                                if (x.tag.value.display.value.Lore) {
+                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                                    if (array) return;
+                                }
         
                                 if (database[item_name]) {
                                     item_price += database[item_name] * x.Count.value;
@@ -220,33 +235,10 @@ class Networth extends Command {
                         else if (ENCHANTMENTS[x[0].titleCase().replace(/ /g, "_")]) item_price += ENCHANTMENTS[x[0].toUpperCase().replace(/ /g, "_")][roman];
                     });
                     players_networth += item_price * item.Count;
-                    enderchest.push({ name: item_name, cost: item_price * item.Count || 0, count: item.Count });
+                    enderchest.push({ name: item_name, cost: item_price * item.Count || 0, count: item.Count, isRecomb });
                 });
-        
-                // Wardrobe inventory to the wardrobe array.
-                if (items.wardrobe_inventory.length > 0) items.wardrobe_inventory.forEach(async item => {
-                    if (!item.tag) return;
-        
-                    let item_name = item.tag.display.Name ? item.tag.display.Name.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                    if (!item_name) return;
-                    let item_price = database[item_name];
-                    if (!item_price) return;
-        
-                    // Hot Potato
-                    if (item.tag.ExtraAttributes.hot_potato_count) item_price += HOT_POTATO_BOOK * item.tag.ExtraAttributes.hot_potato_count;
-        
-                    // Enchantments
-                    let enchantments = [];
-                    if (item.tag.ExtraAttributes.enchantments) enchantments = Object.entries(item.tag.ExtraAttributes.enchantments);
-                    if (enchantments.length > 0) enchantments.forEach(async x => {
-                        let roman = this.client.romanize(x[1]);
-                        if (roman && ENCHANTMENTS[x[0].titleCase().replace(/ /g, "_")]) item_price += ENCHANTMENTS[x[0].toUpperCase().replace(/ /g, "_")][roman];
-                    });
-        
-                    players_networth += item_price * item.Count;
-                    armor.push({ name: item_name, cost: item_price * item.Count || 0, uniqueID: item.itemId, count: 1 });
-                });
-        
+
+                let check_duplicate = [];
                 // Armor inventory to the armor array.
                 if (items.armor.length > 0) items.armor.forEach(async item => {
                     if (!item.tag) return;
@@ -259,16 +251,67 @@ class Networth extends Command {
                     // Hot Potato
                     if (item.tag.ExtraAttributes.hot_potato_count) item_price += HOT_POTATO_BOOK * item.tag.ExtraAttributes.hot_potato_count;
         
+                    let isRecomb = false;
+                    if(Helper.hasPath(item, 'tag', 'ExtraAttributes', 'rarity_upgrades')){
+                        const { rarity_upgrades } = item.tag.ExtraAttributes;
+        
+                        if(rarity_upgrades > 0)
+                            isRecomb = true;
+                            item_price += RECOMB;
+                    }
+
                     // Enchantments
                     let enchantments = [];
                     if (item.tag.ExtraAttributes.enchantments) enchantments = Object.entries(item.tag.ExtraAttributes.enchantments);
                     if (enchantments.length > 0) enchantments.forEach(async x => {
+                        console.log(x)
+                        let roman = this.client.romanize(x[1]);
+                        if (roman && ENCHANTMENTS[x[0].titleCase().replace(/ /g, "_")]) item_price += ENCHANTMENTS[x[0].toUpperCase().replace(/ /g, "_")][roman];
+                    });
+        
+                    check_duplicate.push(item_name);
+
+                    players_networth += item_price * item.Count;
+                    armor.push({ name: item_name, cost: item_price * item.Count || 0, uniqueID: item.itemId, count: 1, isRecomb });
+                });
+
+                // Wardrobe inventory to the wardrobe array.
+                if (items.wardrobe_inventory.length > 0) items.wardrobe_inventory.forEach(async item => {
+                    if (!item.tag) return;
+                    
+                    let item_name = item.tag.display.Name ? item.tag.display.Name.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
+                    if (check_duplicate.includes(item_name)) {
+                        check_duplicate = check_duplicate.filter(x=> x != item_name);
+                        return;
+                    }
+                    if (!item_name) return;
+                    let item_price = database[item_name];
+                    if (!item_price) return;
+
+                    
+                    let isRecomb = false;
+                    if(Helper.hasPath(item, 'tag', 'ExtraAttributes', 'rarity_upgrades')){
+                        const { rarity_upgrades } = item.tag.ExtraAttributes;
+        
+                        if(rarity_upgrades > 0)
+                            isRecomb = true;
+                            item_price += RECOMB;
+                    }
+        
+                    // Hot Potato
+                    if (item.tag.ExtraAttributes.hot_potato_count) item_price += HOT_POTATO_BOOK * item.tag.ExtraAttributes.hot_potato_count;
+        
+                    // Enchantments
+                    let enchantments = [];
+                    if (item.tag.ExtraAttributes.enchantments) enchantments = Object.entries(item.tag.ExtraAttributes.enchantments);
+                    if (enchantments.length > 0) enchantments.forEach(async x => {
+                        this.client.utils(x, 1, true)
                         let roman = this.client.romanize(x[1]);
                         if (roman && ENCHANTMENTS[x[0].titleCase().replace(/ /g, "_")]) item_price += ENCHANTMENTS[x[0].toUpperCase().replace(/ /g, "_")][roman];
                     });
         
                     players_networth += item_price * item.Count;
-                    armor.push({ name: item_name, cost: item_price * item.Count || 0, uniqueID: item.itemId, count: 1 });
+                    armor.push({ name: item_name, cost: item_price * item.Count || 0, uniqueID: item.itemId, count: 1, isRecomb });
                 });
         
                 // Pushing inventory to the inventory array.
@@ -283,6 +326,15 @@ class Networth extends Command {
         
                     if (item.rarity == 'common' || item.rarity == 'COMMON') return;
         
+                    let isRecomb = false;
+                    if(Helper.hasPath(item, 'tag', 'ExtraAttributes', 'rarity_upgrades')){
+                        const { rarity_upgrades } = item.tag.ExtraAttributes;
+        
+                        if(rarity_upgrades > 0)
+                            isRecomb = true;
+                            item_price += RECOMB;
+                    }
+
                     // Processing Backpack
                     if (item_name.endsWith("Backpack")) {
                         if (!item.tag) return;
@@ -294,10 +346,12 @@ class Networth extends Command {
                                 let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
                                 if (!item_name) return;
         
-                                let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                if (array) return;
-        
+                                if (x.tag.value.display.value.Lore) {
+                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                                    if (array) return;
+                                }
+                                
                                 if (database[item_name]) {
                                     item_price += database[item_name] * x.Count.value;
                                 }
@@ -310,9 +364,11 @@ class Networth extends Command {
                                 let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
                                 if (!item_name) return;
         
-                                let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                if (array) return;
+                                if (x.tag.value.display.value.Lore) {
+                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                                    if (array) return;
+                                }
         
                                 if (database[item_name]) {
                                     item_price += database[item_name] * x.Count.value;
@@ -326,9 +382,11 @@ class Networth extends Command {
                                 let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
                                 if (!item_name) return;
         
-                                let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                if (array) return;
+                                if (x.tag.value.display.value.Lore) {
+                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                                    if (array) return;
+                                }
         
                                 if (database[item_name]) {
                                     item_price += database[item_name] * x.Count.value;
@@ -352,10 +410,10 @@ class Networth extends Command {
                     if (item_name.toUpperCase().replace(/ +/g, '_').replace(/\'/, '').endsWith("MIDAS_SWORD")) {
                         players_networth += item.tag.ExtraAttributes.winning_bid || 0;
                         item_price += item.tag.ExtraAttributes.winning_bid || 0;
-                        inventory.push({ name: item_name, cost: item_price || 0, count: 1 });
+                        inventory.push({ name: item_name, cost: item_price || 0, count: 1, isRecomb });
                     } else if (database[item_name]) {
                         players_networth += item_price * item.Count || 0;
-                        inventory.push({ name: item_name, cost: item_price * item.Count || 0, count: item.Count });
+                        inventory.push({ name: item_name, cost: item_price * item.Count || 0, count: item.Count, isRecomb });
                     } else return;
                 });
         
@@ -367,25 +425,33 @@ class Networth extends Command {
                     
                     let talisman_id = item.tag.ExtraAttributes ? item.tag.ExtraAttributes.id : null;
         
+                    let bonus_price = 0;
+                    let isRecomb = false;
+                    if(Helper.hasPath(item, 'tag', 'ExtraAttributes', 'rarity_upgrades')){
+                        const { rarity_upgrades } = item.tag.ExtraAttributes;
+        
+                        if(rarity_upgrades > 0)
+                            isRecomb = true;
+                            bonus_price += RECOMB;
+                    }
+
                     if (database[item_name]) {
-                        players_networth += database[item_name];
-                        talismans.push({ name: item_name.replace(/\�\�\�/g, '').replace(/\�\�\�/g, ''), cost: await database[item_name] || 0, count: 1 })
+                        players_networth += database[item_name] + bonus_price;
+                        talismans.push({ name: item_name.replace(/\�\�\�/g, '').replace(/\�\�\�/g, ''), cost: await database[item_name] + bonus_price || 0, count: 1, isRecomb })
                     } else if (talisman_id) {
                         if (talisman_id.match(/\_[0-9]/g) && talisman_id.match(/\_[0-9]/g).length > 0) {
                             let name = talisman_id.split("_");
                             if (!TALISMANS[`${name[0]}_${name[1]}`][name[2]]) return;
-                            players_networth += TALISMANS[`${name[0]}_${name[1]}`][name[2]];
-                            talismans.push({ name: item_name.replace(/\�\�\�/g, '').replace(/\�\�\�/g, ''), cost: await TALISMANS[`${name[0]}_${name[1]}`][name[2]] || 0, count: 1 })
+                            players_networth += TALISMANS[`${name[0]}_${name[1]}`][name[2]] + bonus_price;
+                            talismans.push({ name: item_name.replace(/\�\�\�/g, '').replace(/\�\�\�/g, ''), cost: await TALISMANS[`${name[0]}_${name[1]}`][name[2]] + bonus_price || 0, count: 1, isRecomb })
                         } else {
                             if (!TALISMANS[talisman_id]) return;
-                            players_networth += TALISMANS[talisman_id];
-                            talismans.push({ name: item_name.replace(/\�\�\�/g, '').replace(/\�\�\�/g, ''), cost: await TALISMANS[talisman_id] || 0, count: 1 })
+                            players_networth += TALISMANS[talisman_id] + bonus_price;
+                            talismans.push({ name: item_name.replace(/\�\�\�/g, '').replace(/\�\�\�/g, ''), cost: await TALISMANS[talisman_id] + bonus_price || 0, count: 1, isRecomb })
                         }
                         
                     } else return;
                 });
-                
-                // console.log(stats.dungeons)
         
                 // Pushing pets to the pets array.
                 if (stats.pets.length > 0) stats.pets.forEach(async pet => {
@@ -393,6 +459,8 @@ class Networth extends Command {
                     let item_price = await database[`[Lvl ${pet.level.level}] ${pet.display_name}`];
                     if (!item_price) return;
         
+                    if (pet.rarity.toLowerCase().includes("common")) return;
+
                     if (pet.heldItem) {
                         let pet_item = await fetch(`https://api.slothpixel.me/api/skyblock/auctions/${pet.heldItem}?key=${config.tokens.slothpixel}`).then(x => x.json())
                             .then(x => x.json())
@@ -406,11 +474,11 @@ class Networth extends Command {
                 });
         
                 setTimeout(async function () {            
-                    let inventoryList = inventory.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} - $${x.cost.toLocaleString()}`).join('\n'),
-                    talismansList = talismans.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} - $${x.cost.toLocaleString()}`).join('\n'),
+                    let inventoryList = inventory.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()}`).join('\n'),
+                    talismansList = talismans.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()}`).join('\n'),
                     petsList = pets.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} - $${x.cost.toLocaleString()}`).join('\n'),
-                    armorList = armor.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} - $${x.cost.toLocaleString()}`).join('\n'),
-                    enderList = enderchest.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} - $${x.cost.toLocaleString()}`).join('\n')
+                    armorList = armor.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()}`).join('\n'),
+                    enderList = enderchest.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()}`).join('\n')
 
                     if (armorList.length > 1024) armorList = armorList.slice(0, 1000).split("\n").reverse().slice(1).reverse().join("\n").trim() + "\n***and many more..***";
                     if (inventoryList.length > 1024) inventoryList = inventoryList.slice(0, 1000).split("\n").reverse().slice(1).reverse().join("\n").trim() + "\n***and many more..***";

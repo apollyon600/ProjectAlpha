@@ -12,6 +12,7 @@ const Helper = require('./Helper.js');
 
 module.exports = {
     getItems: async (profile) => {
+        if (!profile) return;
         const output = {};
     
         // Process inventories returned by API
