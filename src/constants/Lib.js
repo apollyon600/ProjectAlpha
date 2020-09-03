@@ -424,7 +424,7 @@ module.exports = {
         let output = {};
         output.stats = Object.assign({}, constants.base_stats);
     
-        profile.fairy_souls_collected = profile.fairy_souls_collected && profile.fairy_souls_collected ? profile.fairy_souls_collected : 0
+        profile.fairy_souls_collected = profile && profile.fairy_souls_collected ? profile.fairy_souls_collected : 0
         if (isNaN(profile.fairy_souls_collected))
             profile.fairy_souls_collected = 0;
     
@@ -525,10 +525,10 @@ module.exports = {
         output.skill_bonus = {};
     
         for (let skill in skillLevels) {
-            if (skillLevels[skill].level == 0)
+            if (skillLevels[skill] && skillLevels[skill].level == 0)
                 continue;
     
-            const skillBonus = getBonusStat(skillLevels[skill].level || skillLevels[skill], `${skill}_skill`, 50, 1);
+            const skillBonus = getBonusStat(skillLevels[skill] && skillLevels[skill].level || skillLevels[skill], `${skill}_skill`, 50, 1);
     
             output.skill_bonus[skill] = Object.assign({}, skillBonus);
     

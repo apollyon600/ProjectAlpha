@@ -12,7 +12,7 @@ module.exports = class {
             .setThumbnail(guild.iconURL() || default_link)
             .setAuthor(`Guild Added | ${guild.name}`, guild.iconURL() || default_link)
             .setDescription(`
-Project Alpha is now in \`${client.guilds.size}\` guilds!
+Project Alpha is now in \`${client.guilds.cache.size}\` guilds!
             
 **Owner**: ${guild.owner ? guild.owner.user.tag : "Couldn't fetch user"} [\`${guild.ownerID}\`]`)
             .addField(`Channels [${guild.channels.cache.size}]`, `
@@ -27,7 +27,7 @@ Project Alpha is now in \`${client.guilds.size}\` guilds!
             .then(webhook => webhook.send(guildJoinEmbed).then(()=>setTimeout(function() { webhook.delete() }, 5000)))
             .catch(() => { return });
 
-        let channel = client.channels.get("718780922056540201");
+        let channel = client.channels.cache.get("718780922056540201");
         if (channel) channel.setName(`Guilds: ${client.guilds.cache.size}`);
         }
     }

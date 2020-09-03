@@ -13,7 +13,7 @@ module.exports = class {
             .setThumbnail(guild.iconURL() || default_link)
             .setAuthor(`Guild Remove | ${guild.name}`, guild.iconURL() || default_link)
             .setDescription(`
-Project Alpha is now in \`${client.guilds.size}\` guilds!
+Project Alpha is now in \`${client.guilds.cache.size}\` guilds!
             
 **Owner**: ${guild.owner ? guild.owner.user.tag : "Couldn't fetch user"} [\`${guild.ownerID}\`]`)
             .addField(`Channels [${guild.channels.size}]`, `
