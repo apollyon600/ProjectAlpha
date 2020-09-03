@@ -1,5 +1,5 @@
 const { Command } = require('../../structures/CommandStructure.js');
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const config = require("../../../config.json");
 const lib = require("../../constants/Lib.js");
 const objectPath = require("object-path");
@@ -217,7 +217,7 @@ class Player extends Command {
             enderchest.push({ name: item_name, count: item.Count, lore: enchantlore, isRecomb, rarity: item.rarity.titleCase() || "" });
         });
         
-        let page1 = new RichEmbed()
+        let page1 = new MessageEmbed()
             .setColor(this.client.settings.color)
             .setThumbnail(`https://mc-heads.net/avatar/${data.player_name}`)
             .addField("**Stats**", `
@@ -245,7 +245,7 @@ ${playedZombie ? `${await this.client.getEmoji('revenant', 'string')} Revenant H
 ${playedSpider ? `${await this.client.getEmoji('tarantula', 'string')} Tarantula BroodFather **${stats.slayers.spider.level.currentLevel}**:  \`${stats.slayers.spider.level.xp.toLocaleString()} XP\` / \`${stats.slayers.spider.level.xpForNext == 0 ? "MAXED" : stats.slayers.spider.level.xpForNext.toLocaleString()} XP\` **(${(stats.slayers.spider.level.progress * 100).toFixed(0) > 100 ? `100%` : `${(stats.slayers.spider.level.progress * 100).toFixed(0)}%`})**` : `${profileChecking.displayname} has never played tarantula slayers.`}
 ${playedSven ? `${await this.client.getEmoji('sven', 'string')} Sven Packmaster **${stats.slayers.wolf.level.currentLevel}**:  \`${stats.slayers.wolf.level.xp.toLocaleString()} XP\` / \`${stats.slayers.wolf.level.xpForNext == 0 ? "MAXED" : stats.slayers.wolf.level.xpForNext.toLocaleString()} XP\` **(${(stats.slayers.wolf.level.progress * 100).toFixed(0) > 100 ? `100%` : `${(stats.slayers.wolf.level.progress * 100).toFixed(0)}%`})**` : `${profileChecking.displayname} has never played sven slayers.`}`}`)
 
-        let page2 = new RichEmbed()
+        let page2 = new MessageEmbed()
             .setColor(this.client.settings.color)
             .setThumbnail(`https://mc-heads.net/avatar/${data.player_name}`)
             .setDescription(`Average Skill Level: ${stats.average_level.toFixed(2).toLocaleString()}
@@ -261,23 +261,23 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
                 // if ([1, 3, 5, 7, 9, 11].includes(i)) page2.addBlankField()
             }
 
-        let page3 = new RichEmbed()
+        let page3 = new MessageEmbed()
             .setColor(this.client.settings.color)
             .setThumbnail(`https://mc-heads.net/avatar/${data.player_name}`)
 
-        let page4 = new RichEmbed()
+        let page4 = new MessageEmbed()
             .setColor(this.client.settings.color)
             .setThumbnail(`https://mc-heads.net/avatar/${data.player_name}`)
 
-        let page5 = new RichEmbed()
+        let page5 = new MessageEmbed()
             .setColor(this.client.settings.color)
             .setThumbnail(`https://mc-heads.net/avatar/${data.player_name}`)
 
-        let page6 = new RichEmbed()
+        let page6 = new MessageEmbed()
             .setColor(this.client.settings.color)
             .setThumbnail(`https://mc-heads.net/avatar/${data.player_name}`)
 
-        let page7 = new RichEmbed()
+        let page7 = new MessageEmbed()
             .setColor(this.client.settings.color)
             .setThumbnail(`https://mc-heads.net/avatar/${data.player_name}`)
 
@@ -334,7 +334,7 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
         
         let pages = [ { title: "Player Statistics", embed: page1 }, { title: "Player Skills", embed: page2}, { title: "Inventory", embed: page3 }, { title: "Armor", embed: page4 }, { title: "Ender Chest", embed: page5 }, { title: "Accessories", embed: page6 }, { title: "Pets", embed: page7 } ];
         tempMessage.delete()
-        let msg = await message.channel.send(page1.setTitle(data.player_name + ` | Player Statistics`).setFooter(`React below to scroll pages\nPage 1/${pages.length}`, message.author.displayAvatarURL))
+        let msg = await message.channel.send(page1.setTitle(data.player_name + ` | Player Statistics`).setFooter(`React below to scroll pages\nPage 1/${pages.length}`, message.author.displayAvatarURL()))
 
         // console.log(pages)
         msg.react("⏪").then(() => msg.react("⏩").then(() => msg.react("⏸️")));
@@ -350,33 +350,33 @@ ${stats.levels.taming.level == -1 ? `*Skills from achievements across all profil
         forward.on("collect", r => {
             if (page == pages.length) {
                 page = 1;
-                if (msg.reactions.get("⏩")) msg.reactions.get("⏩").remove(message.author)
-                return msg.edit(page1.setTitle(`${data.player_name} | ${pages[0].title}`).setFooter(`React below to scroll pages\nPage 1/${pages.length}`, message.author.displayAvatarURL));
+                if (msg.reactions.cache.get("⏩")) msg.reactions.cache.get("⏩").users.remove(message.author)
+                return msg.edit(page1.setTitle(`${data.player_name} | ${pages[0].title}`).setFooter(`React below to scroll pages\nPage 1/${pages.length}`, message.author.displayAvatarURL()));
             }
             page++;
-            msg.edit(pages[page-1].embed.setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${page}/${pages.length}`, message.author.displayAvatarURL));
-            if (msg.reactions.get("⏩")) msg.reactions.get("⏩").remove(message.author)
+            msg.edit(pages[page-1].embed.setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${page}/${pages.length}`, message.author.displayAvatarURL()));
+            if (msg.reactions.cache.get("⏩")) msg.reactions.cache.get("⏩").users.remove(message.author)
         });
 
         backward.on("collect", r => {
             if (page == 1) {
                 page = pages.length;
-                if (msg.reactions.get("⏪")) msg.reactions.get("⏪").remove(message.author)
-                return msg.edit(pages[pages.length - 1].embed.setTitle(`${data.player_name} | ${pages[pages.length - 1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL));
+                if (msg.reactions.cache.get("⏪")) msg.reactions.cache.get("⏪").users.remove(message.author)
+                return msg.edit(pages[pages.length - 1].embed.setTitle(`${data.player_name} | ${pages[pages.length - 1].title}`).setFooter(`React below to scroll pages\nPage ${pages.length}/${pages.length}`, message.author.displayAvatarURL()));
             }
             page--;
-            msg.edit(pages[page-1].embed.setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${page}/${pages.length}`, message.author.displayAvatarURL));
-            if (msg.reactions.get("⏪")) msg.reactions.get("⏪").remove(message.author)
+            msg.edit(pages[page-1].embed.setTitle(`${data.player_name} | ${pages[page-1].title}`).setFooter(`React below to scroll pages\nPage ${page}/${pages.length}`, message.author.displayAvatarURL()));
+            if (msg.reactions.cache.get("⏪")) msg.reactions.cache.get("⏪").users.remove(message.author)
         });
 
         backward.on("end", r => {
             msg.edit(pages[page-1].embed.setFooter("Session Ended at").setTimestamp())
-            if (msg.reactions.get("⏪")) msg.reactions.get("⏪").removeAll()
-            if (msg.reactions.get("⏩")) msg.reactions.get("⏩").removeAll()
+            msg.reactions.removeAll();
         });
 
         pause.on("collect", r => {
             msg.edit(templateEmbed.setFooter("Session Force Ended at").setTimestamp());
+            msg.reactions.removeAll();
         })
 
         async function getBar(current, max) {

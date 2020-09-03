@@ -1,5 +1,5 @@
 const { Command } = require('../../structures/CommandStructure.js');
-const { RichEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 class Invite extends Command {
     constructor(client) {
         super(client, {
@@ -11,7 +11,10 @@ class Invite extends Command {
         });
     }
     async exec(message, args, templateEmbed) {
-        message.channel.send(templateEmbed.setDescription(`
+        message.channel.send(
+            templateEmbed
+                .setThumbnail(this.client.user.displayAvatarURL())
+            .setDescription(`
 **Invite Project Alpha**:
 <https://discord.com/oauth2/authorize?client_id=656739867404795934&scope=bot&permissions=388160>
 

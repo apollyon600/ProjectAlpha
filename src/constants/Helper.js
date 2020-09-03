@@ -2,7 +2,7 @@
 const constants = require('./Constants.js');
 const config = require('../../config.json');
 const lib = require("./Lib.js");
-const { RichEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 module.exports = {
      renderLore: async (text) => {
         let output = "";
@@ -92,7 +92,7 @@ module.exports = {
         if (profiles.length == 0) return message.channel.send(`Seems like that ${player_input} has **never** played Skyblock`);
         if (!profile_input) profiles = profiles[0].id;
         if (profile_input) profiles = profiles.filter(x => x.name.toLowerCase() == profile_input.toLowerCase())[0];
-        if (!profiles) return message.channel.send(`Looks like the profile \`${profile_input.titleCase()}\` does not exist for this user.`, new RichEmbed().setColor("#6283d9").setDescription(`Available Profiles:\n${savedProfiles.map(x=>`[${PROFILE_EMOJIS[x.name]}] ${x.name}`).join('\n')}`))
+        if (!profiles) return message.channel.send(`Looks like the profile \`${profile_input.titleCase()}\` does not exist for this user.`, new MessageEmbed().setColor("#6283d9").setDescription(`Available Profiles:\n${savedProfiles.map(x=>`[${PROFILE_EMOJIS[x.name]}] ${x.name}`).join('\n')}`))
         else if (profile_input && profiles) profiles = profiles.id;
         let skyblockData = await require('node-fetch')(`https://api.hypixel.net/skyblock/profile?key=${config.tokens.hypixel}&name=${profileChecking.displayname.titleCase()}&profile=${profiles.titleCase()}`)
             .then(x => x.json())

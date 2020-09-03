@@ -46,7 +46,7 @@ class ClientStructure extends Client {
     }
     
     async getEmoji(name, type) {
-        let emoji = this.guilds.get("731355261822042162").emojis.find(emoji => emoji.name == name);
+        let emoji = this.guilds.cache.get("731355261822042162").emojis.cache.find(emoji => emoji.name == name);
         if (!emoji) return;
 
         if (type == 'string') return `<:${emoji.name}:${emoji.id}>`;
@@ -106,12 +106,12 @@ class ClientStructure extends Client {
         if (!guild || !mention) return null;
         if (mention) {
             if (mention.length == 18) {
-                return guild.members.get(mention)
-            } else if (guild.members.find(m => m.user.tag === mention)) return guild.members.find(m => m.user.tag === mention);
+                return guild.members.cache.get(mention)
+            } else if (guild.members.cache.find(m => m.user.tag === mention)) return guild.members.cache.find(m => m.user.tag === mention);
             else if (typeof(mention) === "string" && mention.startsWith("<@") && mention.endsWith(">")) {
                 mention = mention.slice(2, -1);
                 if (mention.startsWith("!")) mention = mention.slice(1);
-                return guild.members.get(mention) ? guild.members.get(mention) : null;
+                return guild.members.cache.get(mention) ? guild.members.cache.get(mention) : null;
             } else return null; 
         }
     };
@@ -119,12 +119,12 @@ class ClientStructure extends Client {
     async getUser(mention) {
         if (!mention) return null;
         if (mention) {
-            if (mention.length == 18) try { return await this.fetchUser(mention); } catch (e) { return null; }
+            if (mention.length == 18) try { return await this.users.fetch(mention); } catch (e) { return null; }
             else if (typeof(mention) === "string" && mention.startsWith("<@") && mention.endsWith(">")) {
                 mention = mention.slice(2, -1);
                 if (mention.startsWith("!")) mention = mention.slice(1);
                 try {
-                    return await this.fetchUser(mention);
+                    return await this.users.fetch(mention);
                 } catch (e) { return null; }
             } else return null;
         }
@@ -132,23 +132,23 @@ class ClientStructure extends Client {
 
     async getChannel(guild, mention) {
         if (mention.length == 18) {
-            return guild.channels.get(mention) || null;
+            return guild.channels.cache.get(mention) || null;
         } else if (mention.startsWith("<#") && mention.endsWith(">")) {
             mention = mention.slice(2, -1);
-            return guild.channels.get(mention) || null;
-        } else if (guild.channels.find(x => x.name == mention)) {
-            return guild.channels.find(x => x.name == mention) || null;
+            return guild.channels.cache.get(mention) || null;
+        } else if (guild.channels.cache.find(x => x.name == mention)) {
+            return guild.channels.cache.find(x => x.name == mention) || null;
         } else return null;
     }
     
     async getRole(guild, mention) {
         if (mention.length == 18) {
-            return guild.roles.get(mention) || null;
+            return guild.roles.cache.get(mention) || null;
         } else if (mention.startsWith("<@&") && mention.endsWith(">")) {
             mention = mention.slice(3, -1);
-            return guild.roles.get(mention) || null;
-        } else if (guild.roles.find(x => x.name == mention)) {
-            return guild.roles.find(x => x.name == mention) || null;
+            return guild.roles.cache.get(mention) || null;
+        } else if (guild.roles.cache.find(x => x.name == mention)) {
+            return guild.roles.cache.find(x => x.name == mention) || null;
         } else return null;
     }
 }

@@ -1,5 +1,5 @@
 const { Command } = require('../../structures/CommandStructure.js');
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const config = require("../../../config.json");
 const lib = require("../../constants/Lib.js");
 const objectPath = require("object-path");
@@ -44,7 +44,7 @@ class Networth extends Command {
         
                 if (args[0] == "update" && config.devs.includes(message.author.id)) {
                     
-                    let update_embed = new RichEmbed()
+                    let update_embed = new MessageEmbed()
                         .setColor(this.client.settings.color)
 
                     try {
@@ -111,7 +111,7 @@ class Networth extends Command {
                     }
                     return;
                     } catch (e) {
-                        update_embed.edit(new RichEmbed().setColor("RED").setTitle("An unknown error has occured").setDescription(`\`\`\`js\n${e}\`\`\``))
+                        update_embed.edit(new MessageEmbed().setColor("RED").setTitle("An unknown error has occured").setDescription(`\`\`\`js\n${e}\`\`\``))
                     }
                 }
         

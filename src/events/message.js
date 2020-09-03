@@ -1,5 +1,5 @@
 const Logger = require("@ayana/logger");
-const { RichEmbed } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const prettyms = require("pretty-ms");
 const ms = require('ms');
 const ms2 = require('parse-ms');
@@ -15,15 +15,15 @@ const doMsg = async (client, message) => {
     let args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
     const cmd = client.commands.get(command) || client.commands.get(client.aliases.get(command));
-    let templateEmbed = new RichEmbed()
+    let templateEmbed = new MessageEmbed()
         .setColor(client.settings.color)
 
     const commandWebhook = await client.fetchWebhook('722994513492050010', config.tokens.command_webhook)
-    const embedCommand = new RichEmbed()
+    const embedCommand = new MessageEmbed()
         .setColor(client.settings.color)
 
     // Contributors can only use the bot if its in development.
-    if (client.token == config.tokens.development && !message.member.roles.has("717291908031971428")) return;
+    if (client.token == config.tokens.development && !message.member.roles.cache.has("717291908031971428")) return;
 
     if (message.guild) {
         // Cooldown Checker
@@ -42,8 +42,8 @@ const doMsg = async (client, message) => {
         else if (!config.devs.includes(message.author.id) && !message.guild.me.permissions.has(cmd.userPermission)) return message.channel.send(templateEmbed.setDescription(`Missing Permissions: \`${cmd.userPermission}\``))
 
         embedCommand
-            .setAuthor(`${message.author.tag} • ${config.tokens.development == client.token ? "Development" : "Main"}`, message.author.displayAvatarURL)
-            .setThumbnail(message.guild.iconURL)
+            .setAuthor(`${message.author.tag} • ${config.tokens.development == client.token ? "Development" : "Main"}`, message.author.displayAvatarURL())
+            .setThumbnail(message.guild.iconURL())
             .setDescription(`
 **User**: ${message.author.tag} [\`${message.author.id}\`]
 **Guild**: ${message.guild.name} [\`${message.guild.id}\`]

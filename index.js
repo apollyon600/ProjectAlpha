@@ -5,9 +5,9 @@ const Logger = require("@ayana/logger");
 const client = new ClientStructure(config.tokens.main);
 const DBL = require("dblapi.js");
 
-client.on("error", (e) => console.error(e)); // Debugging because I had websocket issues
-client.on("warn", (e) => console.warn(e)); // Debugging because I had websocket issues
-client.on("debug", (e) => console.info(e)); // Debugging because I had websocket issues
+// client.on("error", (e) => console.error(e)); // Debugging because I had websocket issues
+// client.on("warn", (e) => console.warn(e)); // Debugging because I had websocket issues
+// client.on("debug", (e) => console.info(e)); // Debugging because I had websocket issues
 
 if (config.tokens.main == client.token) {
     
@@ -28,8 +28,6 @@ if (config.tokens.main == client.token) {
 CommandLoader.loadCommands(client);
 CommandLoader.loadEvents(client);
 client.start();
-
-Logger.get("indexjs").info("index.js Successfully Loaded.")
 
 String.prototype.titleCase = function() {
     var splitStr = this.toLowerCase()
