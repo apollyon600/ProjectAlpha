@@ -47,6 +47,9 @@ class Networth extends Command {
                     let update_embed = new MessageEmbed()
                         .setColor(this.client.settings.color)
 
+                    let timeToUpdate = Date.now();
+                    let finalizedTime = null;
+
                     try {
                         let queue = [],
                         database = await this.client.comp("mongo").prices.findOne(),
@@ -64,8 +67,8 @@ class Networth extends Command {
                         .catch(e => { console.log("GET request for \`https://auctions.craftlink.xyz/api/items/all\` failed, API is down?")});
                         if (!items || items && !items.success) return console.log("GET request for \`https://auctions.craftlink.xyz/api/items/all\` failed, API is down?");
         
-                        queue = items.data;
-                        total = items.data.length;
+                        queue = items.data.filter(x => /^[a-zA-Z0-9 \[\]◆+�✪]*$/gm.test(x.name));
+                        total = items.data.filter(x => /^[a-zA-Z0-9 \[\]◆+�✪]*$/gm.test(x.name)).length;
                     };
         
                     async function getData(id) {
@@ -75,11 +78,12 @@ class Networth extends Command {
                         if (!data || data && !data.success) {
                             failed++;
                             console.log("GET request for \`https://auctions.craftlink.xyz/api/items/all\` failed, API is down?"); 
-                            return null;
+                            return getNext();
                         } else {
                             data = data.data;
-                            logs.push(`Repriced ${data.name} for $${Math.round(data.deviation || data.average)}`)
-                            return { name: data.name, price: Math.round(data.deviation || data.average) };
+                            let molan = (data.deviation || data.average / 2.75) * 1200000
+                            logs.push(`Repriced ${data.name} for ${Math.round(molan).toLocaleString()} Coins ($${(data.deviation || data.average).toFixed(2)})`)
+                            return { name: data.name, price: Math.round(molan) };
                         }
                     }
                       
@@ -90,17 +94,17 @@ class Networth extends Command {
                         let fetched = await getData(data._id);
                         if (fetched) {
                             database[fetched.name] = fetched.price;
-                            if (success % 25 == 0 || queue.length == success) {       
+                            if (success % 25 == 0 || queue.length == success) {  
+                                finalizedTime = Date.now() - timeToUpdate;     
                                 msg.edit(update_embed.setDescription(`      
 **Renewed ${total - queue.length}/${total} items/blocks to the database!**
 **Success**: ${success} | **Failed**: ${failed}
-**Estimated Time**: ${prettyms(1000 * queue.length, { verbose: true })}
+**Estimated Time**: ${prettyms(finalizedTime * queue.length, { verbose: true })}
 
 **Logs**:
-\`\`\`diff\n${logs.reverse().slice(0, 25).join('\n')}\`\`\``));
+\`\`\`diff\n${logs.reverse().slice(0, 25).join('\n')}\`\`\``.slice(0, 2048)));
                                 client.comp('mongo').prices.updateOne({ id: "prices" }, { $set: { db: database }});
                             }
-                            // console.log(`Added ${fetched.name} to the database - $${fetched.price} | ${queue.length} Items Left`)
                             getNext();
                         }
                     }
@@ -137,7 +141,7 @@ class Networth extends Command {
                 database = database.db;
         
                 const HOT_POTATO_BOOK = database['Hot Potato Book'];
-                const RECOMB = 6750000;
+                const RECOMB = 7500000;
         
                 let pets = [], armor = [], enderchest = [], talismans = [], inventory = [];
         
@@ -472,11 +476,11 @@ class Networth extends Command {
                 });
         
                 setTimeout(async function () {            
-                    let inventoryList = inventory.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()}`).join('\n'),
-                    talismansList = talismans.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()}`).join('\n'),
+                    let inventoryList = inventory.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${(x.cost / 1200000).toFixed(2)}**)`).join('\n'),
+                    talismansList = talismans.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${(x.cost / 1200000).toFixed(2)}**)`).join('\n'),
                     petsList = pets.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} - $${x.cost.toLocaleString()}`).join('\n'),
-                    armorList = armor.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()}`).join('\n'),
-                    enderList = enderchest.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()}`).join('\n')
+                    armorList = armor.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${(x.cost / 1200000).toFixed(2)}**)`).join('\n'),
+                    enderList = enderchest.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${(x.cost / 1200000).toFixed(2)}**)`).join('\n')
 
                     if (armorList.length > 1024) armorList = armorList.slice(0, 1000).split("\n").reverse().slice(1).reverse().join("\n").trim() + "\n***and many more..***";
                     if (inventoryList.length > 1024) inventoryList = inventoryList.slice(0, 1000).split("\n").reverse().slice(1).reverse().join("\n").trim() + "\n***and many more..***";
@@ -493,11 +497,11 @@ ${await client.getEmoji('bank', 'string')} Bank: ${!skyblockData.profile.banking
 ${await client.getEmoji('maddoxbatphone', 'string')} Slayers: $${stats.slayer_coins_spent.total ? stats.slayer_coins_spent.total.toLocaleString() : 0}
 ${await client.getEmoji('magnify', 'string')} Networth: ${players_networth ? `$${players_networth.toLocaleString()}` : "Error when calculating your networth"}`)
                         .setFooter(stats.slayer_coins_spent.total && stats.slayer_coins_spent.total > 10000000 ? "" : "")
-                    if (inventory.length > 0) templateEmbed.addField(`Inventory ($${inventory.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()})`, inventoryList);
-                    if (armor.length > 0) templateEmbed.addField(`Armor ($${armor.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()})`, armorList);
-                    if (talismans.length > 0) templateEmbed.addField(`Talismans ($${talismans.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()})`, talismansList);
-                    if (enderchest.length > 0) templateEmbed.addField(`Enderchest ($${enderchest.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()})`, enderList);
-                    if (pets.length > 0) templateEmbed.addField(`Pets ($${pets.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()})`, petsList);
+                    if (inventory.length > 0) templateEmbed.addField(`Inventory ($${inventory.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(inventory.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, inventoryList);
+                    if (armor.length > 0) templateEmbed.addField(`Armor ($${armor.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(armor.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, armorList);
+                    if (talismans.length > 0) templateEmbed.addField(`Talismans ($${talismans.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(talismans.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, talismansList);
+                    if (enderchest.length > 0) templateEmbed.addField(`Enderchest ($${enderchest.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(enderchest.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, enderList);
+                    if (pets.length > 0) templateEmbed.addField(`Pets ($${pets.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(pets.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, petsList);
                     tempMessage.delete().catch(() => { return });
                     message.channel.send(templateEmbed).catch(() => { return });
                 }, 5000)
