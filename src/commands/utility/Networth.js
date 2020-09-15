@@ -29,18 +29,6 @@ class Networth extends Command {
         let client = this.client;
             
                 if (!args[0]) return message.channel.send("Invalid arguments to calculate a players networth: `alpha networth [IGN] [Profile]`");
-
-                const processBackpack = backpack => {
-                    const promise = new Promise((resolve, reject) => {
-                      const buffer = Buffer.from(backpack);
-                  
-                      nbt.parse(buffer, (e, d) => {
-                        resolve(d.value.i.value.value);
-                      });
-                    });
-                  
-                    return promise;
-                }
         
                 if (args[0] == "update" && config.devs.includes(message.author.id)) {
                     
@@ -81,9 +69,9 @@ class Networth extends Command {
                             return getNext();
                         } else {
                             data = data.data;
-                            let molan = (data.deviation || data.average / 2.75) * 1200000
-                            logs.push(`Repriced ${data.name} for ${Math.round(molan).toLocaleString()} Coins ($${(data.deviation || data.average).toFixed(2)})`)
-                            return { name: data.name, price: Math.round(molan) };
+                            let molan = (data.deviation || data.average);
+                            logs.push(`Repriced ${data.name} for ${Math.round(molan || 0).toLocaleString()} Coins`)
+                            return { name: data.name, price: Math.round(molan || 0) };
                         }
                     }
                       
@@ -127,6 +115,17 @@ class Networth extends Command {
                 let items = await lib.getItems(profile);
                 let stats = await lib.getStats(profile, items, profileChecking);
 
+                // Sky.lea.moe API
+                // https://sky.lea.moe/api/v2/bazaar
+                let bazzar = await fetch("https://sky.lea.moe/api/v2/bazaar").then(x => x.json());
+                if (!bazzar) return message.channel.send("An error occured when fetching sky.lea.moe's bazzar api.");
+                let types = Object.keys(bazzar);
+                let bazzar_prices = {};
+
+                for (let i = 0; i < types.length; i++) {
+                    bazzar_prices[types[i]] = bazzar[types[i]].price;
+                }
+
                 if (items.no_inventory) return message.channel.send(`Sorry, I couldn't calculate the networth of **${profileChecking.displayname} [\`${PROFILE_EMOJIS[profileChecking.stats.SkyBlock.profiles[profiles].cute_name]} ${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}\`]** because their API is disabled.`)
         
                 let tempMessage = await message.channel.send(`Calculating networth for **${profileChecking.displayname} [\`${PROFILE_EMOJIS[profileChecking.stats.SkyBlock.profiles[profiles].cute_name]} ${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}\`]**`);
@@ -140,8 +139,8 @@ class Networth extends Command {
                 let database = await this.client.comp("mongo").prices.findOne();
                 database = database.db;
         
-                const HOT_POTATO_BOOK = database['Hot Potato Book'];
-                const RECOMB = 7500000;
+                const HOT_POTATO_BOOK = bazzar_prices["HOT_POTATO_BOOK"];
+                const RECOMB = bazzar_prices["RECOMBOBULATOR_3000"];
         
                 let pets = [], armor = [], enderchest = [], talismans = [], inventory = [];
         
@@ -150,9 +149,8 @@ class Networth extends Command {
                     if (!item.tag) return;
         
                     let item_name = item.tag.display.Name ? item.tag.display.Name.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                    if (!item_name) return;
                     let item_price = database[item_name];
-                    if (!item_price) return;
+                    let item_id = item.tag.ExtraAttributes.id;
         
                     if (item.rarity == 'common' || item.rarity == 'COMMON') return;
 
@@ -166,66 +164,7 @@ class Networth extends Command {
                     }
         
                     // Processing Backpack
-                    if (item_name.endsWith("Backpack")) {
-                        if (!item.tag) return;
-                        if (objectPath.has(item, 'tag.ExtraAttributes.greater_backpack_data')) {
-                            let data = await processBackpack(item.tag.ExtraAttributes.greater_backpack_data)
-                            
-                            data.forEach(x => {
-                                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
-                                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                                if (!item_name) return;
-
-                                // console.log(item_name);
-        
-                                if (x.tag.value.display.value.Lore) {
-                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                    if (array) return;
-                                }
-        
-                                if (database[item_name]) {
-                                    item_price += database[item_name] * x.Count.value;
-                                }
-                            });
-                        } else if (objectPath.has(item, 'tag.ExtraAttributes.medium_backpack_data')) {
-                            let data = await processBackpack(item.tag.ExtraAttributes.medium_backpack_data)
-                            
-                            data.forEach(x => {
-                                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
-                                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                                if (!item_name) return;
-        
-                                if (x.tag.value.display.value.Lore) {
-                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                    if (array) return;
-                                }
-        
-                                if (database[item_name]) {
-                                    item_price += database[item_name] * x.Count.value;
-                                }
-                            });
-                        } else if (objectPath.has(item, 'tag.ExtraAttributes.small_backpack_data')) {
-                            let data = await processBackpack(item.tag.ExtraAttributes.small_backpack_data)
-                            
-                            data.forEach(x => {
-                                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
-                                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                                if (!item_name) return;
-        
-                                if (x.tag.value.display.value.Lore) {
-                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                    if (array) return;
-                                }
-        
-                                if (database[item_name]) {
-                                    item_price += database[item_name] * x.Count.value;
-                                }
-                            });
-                        }
-                    }
+                    item_price += await checkBackpack(item, item_name, item_id, database, bazzar_prices);
         
                     // Hot Potato
                     if (item.tag.ExtraAttributes && item.tag.ExtraAttributes.hot_potato_count) item_price += HOT_POTATO_BOOK * item.tag.ExtraAttributes.hot_potato_count;
@@ -238,8 +177,10 @@ class Networth extends Command {
                         if (!roman) return;
                         else if (ENCHANTMENTS[x[0].titleCase().replace(/ /g, "_")]) item_price += ENCHANTMENTS[x[0].toUpperCase().replace(/ /g, "_")][roman];
                     });
-                    players_networth += item_price * item.Count;
-                    enderchest.push({ name: item_name, cost: item_price * item.Count || 0, count: item.Count, isRecomb });
+                    if (!item_price || isNaN(item_price) || item_price < 0) item_price = 0;
+                    if (!bazzar_prices[item_id] || isNaN(bazzar_prices[item_id]) || bazzar_prices[item_id] < 0) bazzar_prices[item_id] = 0;
+                    players_networth += bazzar_prices[item_id] ? bazzar_prices[item_id] : item_price ? item_price : 0 * item.Count;
+                    enderchest.push({ name: item_name, cost: (bazzar_prices[item_id] ? bazzar_prices[item_id] : item_price) * item.Count || 0, count: item.Count, isRecomb });
                 });
 
                 let check_duplicate = [];
@@ -273,7 +214,7 @@ class Networth extends Command {
                     });
         
                     check_duplicate.push(item_name);
-
+                    if (!item_price || isNaN(item_price) || item_price < 0) item_price = 0;
                     players_networth += item_price * item.Count;
                     armor.push({ name: item_name, cost: item_price * item.Count || 0, uniqueID: item.itemId, count: 1, isRecomb });
                 });
@@ -287,9 +228,8 @@ class Networth extends Command {
                         check_duplicate = check_duplicate.filter(x=> x != item_name);
                         return;
                     }
-                    if (!item_name) return;
                     let item_price = database[item_name];
-                    if (!item_price) return;
+                    let item_id = item.tag.ExtraAttributes.id;
 
                     
                     let isRecomb = false;
@@ -311,7 +251,7 @@ class Networth extends Command {
                         let roman = this.client.romanize(x[1]);
                         if (roman && ENCHANTMENTS[x[0].titleCase().replace(/ /g, "_")]) item_price += ENCHANTMENTS[x[0].toUpperCase().replace(/ /g, "_")][roman];
                     });
-        
+                    if (!item_price || isNaN(item_price) || item_price < 0) item_price = 0;
                     players_networth += item_price * item.Count;
                     armor.push({ name: item_name, cost: item_price * item.Count || 0, uniqueID: item.itemId, count: 1, isRecomb });
                 });
@@ -322,9 +262,8 @@ class Networth extends Command {
                     if (!item.tag) return;
                     
                     let item_name = item.tag.display.Name ? item.tag.display.Name.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                    if (!item_name) return;
                     let item_price = database[item_name];
-                    if (!item_price) return;
+                    let item_id = item.tag.ExtraAttributes.id;
         
                     if (item.rarity == 'common' || item.rarity == 'COMMON') return;
         
@@ -338,64 +277,7 @@ class Networth extends Command {
                     }
 
                     // Processing Backpack
-                    if (item_name.endsWith("Backpack")) {
-                        if (!item.tag) return;
-                        if (objectPath.has(item, 'tag.ExtraAttributes.greater_backpack_data')) {
-                            let data = await processBackpack(item.tag.ExtraAttributes.greater_backpack_data)
-                            
-                            data.forEach(x => {
-                                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
-                                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                                if (!item_name) return;
-        
-                                if (x.tag.value.display.value.Lore) {
-                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                    if (array) return;
-                                }
-                                
-                                if (database[item_name]) {
-                                    item_price += database[item_name] * x.Count.value;
-                                }
-                            });
-                        } else if (objectPath.has(item, 'tag.ExtraAttributes.medium_backpack_data')) {
-                            let data = await processBackpack(item.tag.ExtraAttributes.medium_backpack_data)
-                            
-                            data.forEach(x => {
-                                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
-                                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                                if (!item_name) return;
-        
-                                if (x.tag.value.display.value.Lore) {
-                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                    if (array) return;
-                                }
-        
-                                if (database[item_name]) {
-                                    item_price += database[item_name] * x.Count.value;
-                                }
-                            });
-                        } else if (objectPath.has(item, 'tag.ExtraAttributes.small_backpack_data')) {
-                            let data = await processBackpack(item.tag.ExtraAttributes.small_backpack_data)
-                            
-                            data.forEach(x => {
-                                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
-                                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                                if (!item_name) return;
-        
-                                if (x.tag.value.display.value.Lore) {
-                                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
-                                    array = array.filter(x=>x.startsWith("COMMON"))[0];
-                                    if (array) return;
-                                }
-        
-                                if (database[item_name]) {
-                                    item_price += database[item_name] * x.Count.value;
-                                }
-                            });
-                        }
-                    }
+                    item_price += await checkBackpack(item, item_name, item_id, database, bazzar_prices);
         
                     // Hot Potato
                     if (item.tag.ExtraAttributes.hot_potato_count) item_price += HOT_POTATO_BOOK * item.tag.ExtraAttributes.hot_potato_count;
@@ -413,18 +295,17 @@ class Networth extends Command {
                         players_networth += item.tag.ExtraAttributes.winning_bid || 0;
                         item_price += item.tag.ExtraAttributes.winning_bid || 0;
                         inventory.push({ name: item_name, cost: item_price || 0, count: 1, isRecomb });
-                    } else if (database[item_name]) {
-                        players_networth += item_price * item.Count || 0;
-                        inventory.push({ name: item_name, cost: item_price * item.Count || 0, count: item.Count, isRecomb });
-                    } else return;
+                    } else {
+                        if (!item_price || isNaN(item_price) || item_price < 0) item_price = 0;
+                        players_networth += bazzar_prices[item_id] ? bazzar_prices[item_id] : item_price ? item_price : 0 * item.Count;
+                        inventory.push({ name: item_name, cost: bazzar_prices[item_id] ? bazzar_prices[item_id] : item_price * item.Count || 0, count: item.Count, isRecomb });
+                    }
                 });
         
                 // Pushing talismans to the talismans array.
                 if (items.talismans.length > 0) items.talismans.forEach(async item => {
-                    if (!item.tag) return;
+
                     let item_name = item.tag.display.Name ? item.tag.display.Name.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
-                    if (!item_name) return;
-                    
                     let talisman_id = item.tag.ExtraAttributes ? item.tag.ExtraAttributes.id : null;
         
                     let bonus_price = 0;
@@ -459,8 +340,7 @@ class Networth extends Command {
                 if (stats.pets.length > 0) stats.pets.forEach(async pet => {
                     if (!pet.display_name) return;
                     let item_price = await database[`[Lvl ${pet.level.level}] ${pet.display_name}`];
-                    if (!item_price) return;
-        
+
                     if (pet.rarity.toLowerCase().includes("common")) return;
 
                     if (pet.heldItem) {
@@ -470,17 +350,21 @@ class Networth extends Command {
                         
                         if (pet_item) item_price += !pet_item.standard_deviation || pet_item.standard_deviation == 0 ? pet_item.average_price : pet_item.standard_deviation;
                     }
-        
+                    if (!item_price || isNaN(item_price) || item_price < 0) item_price = 0;
                     players_networth += item_price;
                     pets.push({ name: `[${pet.level.level == 100 ? "**Lvl 100**" : `Lvl ${pet.level.level}`}] ${pet.rarity.titleCase()} ${pet.display_name}`, cost: item_price || 0 });
                 });
-        
+
+                // Cookie Price
+                let cookie = bazzar_prices["BOOSTER_COOKIE"];
+
+                // coins / cookie * 2.75
                 setTimeout(async function () {            
-                    let inventoryList = inventory.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${(x.cost / 1200000).toFixed(2)}**)`).join('\n'),
-                    talismansList = talismans.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${(x.cost / 1200000).toFixed(2)}**)`).join('\n'),
-                    petsList = pets.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} - $${x.cost.toLocaleString()}`).join('\n'),
-                    armorList = armor.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${(x.cost / 1200000).toFixed(2)}**)`).join('\n'),
-                    enderList = enderchest.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${(x.cost / 1200000).toFixed(2)}**)`).join('\n')
+                    let inventoryList = inventory.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${((x.cost / cookie) * 2.75).toFixed(2)}**)`).join('\n'),
+                    talismansList = talismans.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${((x.cost / cookie) * 2.75).toFixed(2)}**)`).join('\n'),
+                    petsList = pets.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} - $${x.cost.toLocaleString()} (**$${((x.cost / cookie) * 2.75).toFixed(2)}**)`).join('\n'),
+                    armorList = armor.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${((x.cost / cookie) * 2.75).toFixed(2)}**)`).join('\n'),
+                    enderList = enderchest.map(x=>`${x.count > 1 ? `**[x${x.count}]** ` : ""}${x.name} ${x.isRecomb ? "**[R]**" : ""} - $${x.cost.toLocaleString()} (**$${((x.cost / cookie) * 2.75).toFixed(2)}**)`).join('\n')
 
                     if (armorList.length > 1024) armorList = armorList.slice(0, 1000).split("\n").reverse().slice(1).reverse().join("\n").trim() + "\n***and many more..***";
                     if (inventoryList.length > 1024) inventoryList = inventoryList.slice(0, 1000).split("\n").reverse().slice(1).reverse().join("\n").trim() + "\n***and many more..***";
@@ -490,22 +374,103 @@ class Networth extends Command {
 
                     templateEmbed
                         .setAuthor(`Networth Calculator for\n${profileChecking.displayname} ${rankTitle ? `[${rankTitle}] ` : ""}[${PROFILE_EMOJIS[profileChecking.stats.SkyBlock.profiles[profiles].cute_name]} ${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}]`, `https://mc-heads.net/avatar/${profileChecking.displayname}`, `https://sky.shiiyu.moe/stats/${profileChecking.displayname}/${profileChecking.stats.SkyBlock.profiles[profiles].cute_name}`)
-                        .setThumbnail(`https://mc-heads.net/avatar/${profileChecking.displayname}`)
+                        .setThumbnail(`https://crafatar.com/avatars/${profileChecking.uuid.replace(/-/g, "")}?size=128&overlay`)
                         .setDescription(`
 ${await client.getEmoji('coin', 'string')} Purse: $${Math.floor(profile.coin_purse).toLocaleString()}
 ${await client.getEmoji('bank', 'string')} Bank: ${!skyblockData.profile.banking ? "Bank API is **disabled**" : `$${Math.floor(skyblockData.profile.banking.balance).toLocaleString()}` }
 ${await client.getEmoji('maddoxbatphone', 'string')} Slayers: $${stats.slayer_coins_spent.total ? stats.slayer_coins_spent.total.toLocaleString() : 0}
 ${await client.getEmoji('magnify', 'string')} Networth: ${players_networth ? `$${players_networth.toLocaleString()}` : "Error when calculating your networth"}`)
-                        .setFooter(stats.slayer_coins_spent.total && stats.slayer_coins_spent.total > 10000000 ? "" : "")
-                    if (inventory.length > 0) templateEmbed.addField(`Inventory ($${inventory.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(inventory.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, inventoryList);
-                    if (armor.length > 0) templateEmbed.addField(`Armor ($${armor.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(armor.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, armorList);
-                    if (talismans.length > 0) templateEmbed.addField(`Talismans ($${talismans.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(talismans.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, talismansList);
-                    if (enderchest.length > 0) templateEmbed.addField(`Enderchest ($${enderchest.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(enderchest.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, enderList);
-                    if (pets.length > 0) templateEmbed.addField(`Pets ($${pets.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(pets.map(x=>x.cost).reduce((a, b) => a + b) / 1200000).toFixed(2)}**)`, petsList);
+                    if (inventory.length > 0) templateEmbed.addField(`Inventory ($${inventory.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(inventory.map(x=>x.cost).reduce((a, b) => (a + b) / cookie) * 2.75).toFixed(2)}**)`, inventoryList);
+                    if (armor.length > 0) templateEmbed.addField(`Armor ($${armor.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(armor.map(x=>x.cost).reduce((a, b) => (a + b) / cookie) * 2.75).toFixed(2)}**)`, armorList);
+                    if (talismans.length > 0) templateEmbed.addField(`Talismans ($${talismans.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(talismans.map(x=>x.cost).reduce((a, b) => (a + b) / cookie) * 2.75).toFixed(2)}**)`, talismansList);
+                    if (enderchest.length > 0) templateEmbed.addField(`Enderchest ($${enderchest.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(enderchest.map(x=>x.cost).reduce((a, b) => (a + b) / cookie) * 2.75).toFixed(2)}**)`, enderList);
+                    if (pets.length > 0) templateEmbed.addField(`Pets ($${pets.map(x=>x.cost).reduce((a, b) => a + b).toLocaleString()}) (**$${(pets.map(x=>x.cost).reduce((a, b) => (a + b) / cookie) * 2.75).toFixed(2)}**)`, petsList);
                     tempMessage.delete().catch(() => { return });
                     message.channel.send(templateEmbed).catch(() => { return });
                 }, 5000)
 
     }
+}
+
+async function checkBackpack(item, item_name, item_id, database, bazzar_prices) {
+    let price = 0;
+    if (item_name.endsWith("Backpack")) {
+        if (!item.tag) return;
+        if (objectPath.has(item, 'tag.ExtraAttributes.greater_backpack_data')) {
+            let data = await processBackpack(item.tag.ExtraAttributes.greater_backpack_data)
+            
+            data.forEach(x => {
+                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
+                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
+                if (!item_name) return;
+
+                // console.log(item_name);
+
+                if (x.tag.value.display.value.Lore) {
+                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                    if (array) return;
+                }
+
+                if (item_id == "GREATER_BACKPACK") return;
+
+                price += (bazzar_prices[item_id] ? bazzar_prices[item_id] : database[item_name] ? database[item_name] : 0) * x.Count.value;
+            });
+        } else if (objectPath.has(item, 'tag.ExtraAttributes.medium_backpack_data')) {
+            let data = await processBackpack(item.tag.ExtraAttributes.medium_backpack_data)
+            
+            data.forEach(x => {
+                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
+                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
+                if (!item_name) return;
+
+                if (x.tag.value.display.value.Lore) {
+                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                    if (array) return;
+                }
+
+                if (item_id == "MEDIUM_BACKPACK") return;
+
+                price += (bazzar_prices[item_id] ? bazzar_prices[item_id] : database[item_name] ? database[item_name] : 0) * x.Count.value;
+                
+            });
+        } else if (objectPath.has(item, 'tag.ExtraAttributes.small_backpack_data')) {
+            let data = await processBackpack(item.tag.ExtraAttributes.small_backpack_data)
+            
+            data.forEach(x => {
+                if (!x.tag || !x.tag.value || !x.tag.value.display || !x.tag.value.display.value || !x.tag.value.display.value.Name || !x.tag.value.display.value.Name.value) return;
+                let item_name = x.tag.value.display.value.Name.value ? x.tag.value.display.value.Name.value.replace(/§[0-9a-zA-Z]/g, '').trim() : null;
+                if (!item_name) return;
+
+                if (x.tag.value.display.value.Lore) {
+                    let array = x.tag.value.display.value.Lore.value.value.map(x=>x.replace(/§[0-9a-zA-Z]/g, '').trim());
+                    array = array.filter(x=>x.startsWith("COMMON"))[0];
+                    if (array) return;
+                }
+
+                if (item_id == "SMALL_BACKPACK") return;
+
+                price += (bazzar_prices[item_id] ? bazzar_prices[item_id] : database[item_name] ? database[item_name] : 0) * x.Count.value;
+            });
+        }
+
+    }
+    
+    if (isNaN(price)) price = 0;
+    return price;
+    
+}
+
+const processBackpack = backpack => {
+    const promise = new Promise((resolve, reject) => {
+      const buffer = Buffer.from(backpack);
+  
+      nbt.parse(buffer, (e, d) => {
+        resolve(d.value.i.value.value);
+      });
+    });
+  
+    return promise;
 }
 module.exports = Networth;   
