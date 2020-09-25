@@ -7,8 +7,9 @@ class Item extends Command {
     constructor(client) {
         super(client, {
             name: "item",
-            aliases: ['items'],
+            aliases: ['items', 'price', 'info'],
             description: "View an item's information.",
+            usage: "alpha item [name]",
             category: "Utility",
             needsAPI: true,
             autoTip: true,

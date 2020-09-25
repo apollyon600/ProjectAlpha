@@ -3,79 +3,75 @@ module.exports = {
         // Weapons
 	  // Do not troll, I will slap you across the face and possibly ddos you
         BANE_OF_ARTHROPODS: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
-            VI: 0
+            I: 100,
+            II: 250,
+            III: 500,
+            IV: 1000,
+            V: 3000,
+            VI: 7000
         },
         LUCK: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
-            VI: 0
+            I: 500,
+            II: 1000,
+            III: 5000,
+            IV: 10000,
+            V: 15000,
+            VI: 42000
         },
         CRITICAL: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
-            VI: 0
+            I: 1000,
+            II: 5000,
+            III: 10000,
+            IV: 15000,
+            V: 30000,
+            VI: 500000
         },
         ULTIMATE_COMBO: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
+            I: 100000,
+            II: 200000,
+            III: 450000,
+            IV: 1300000,
+            V: 2800000,
         },
         CLEAVE: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
-            VI: 0
+            I: 2500,
+            II: 7500,
+            III: 15000,
+            IV: 30000,
+            V: 60000,
         },
         LOOTING: {
-            I: 0,
-            II: 0,
-            III: 0,
+            I: 2500,
+            II: 5000,
+            III: 10000,
             IV: 80000,
         },
         SCAVENGER: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
+            I: 2500,
+            II: 7500,
+            III: 13000,
+            IV: 26000,
         },
         TELEKINESIS: {
-            I: 0
+            I: 69
         },
         VAMPIRISM: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
-            VI: 0
+            I: 2500,
+            II: 5000,
+            III: 10000,
+            IV: 15000,
+            V: 30000
         },
         EXPERIENCE: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
+            I: 2500,
+            II: 5000,
+            III: 10000,
         },
         LIFE_STEAL: {
             I: 0,
             II: 0,
-            III: 0,
-            IV: 0,
+            III: 25000,
+            IV: 1200000,
         },
         EXECUTE: {
             I: 0,
@@ -90,7 +86,7 @@ module.exports = {
             III: 0,
             IV: 0,
             V: 0,
-            VI: 0
+            VI: 1000000
         },
         FIRST_STRIKE: {
             I: 0,
@@ -121,11 +117,11 @@ module.exports = {
             III: 0,
         },
         DRAGON_HUNTER: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
+            I: 1000000,
+            II: 2000000,
+            III: 4000000,
+            IV: 8000000,
+            V: 16000000,
         },
         PIERCING: {
             I: 0,
@@ -140,14 +136,7 @@ module.exports = {
             VII: 0,
             VIII: 0,
             IX: 0,
-            X: 0
-        },
-        ULTIMATE_WISE: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0
+            X: 500000
         },
         SNIPE: {
             I: 0,
@@ -160,7 +149,7 @@ module.exports = {
             III: 0,
             IV: 0,
             V: 0,
-            VI: 0
+            VI: 7000000
         },
         AIMING: {
             I: 0,
@@ -182,7 +171,7 @@ module.exports = {
             III: 0,
             IV: 0,
             V: 0,
-            VI: 0
+            VI: 1500000
         },
         THUNDERLORD: {
             I: 0,
@@ -193,35 +182,28 @@ module.exports = {
         },
  
         // Armor ;-;
-        ULTIMATE_WISDOM: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
-        },
         REJUVENATE: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
+            I: 50000,
+            II: 130000,
+            III: 250000,
+            IV: 500000,
+            V: 1300000,
         },
         PROTECTION: {
             I: 0,
             II: 0,
             III: 0,
             IV: 0,
-            V: 0,
-            VI: 0
+            V: 20000,
+            VI: 5000000
         },
         GROWTH: {
             I: 0,
             II: 0,
             III: 0,
             IV: 0,
-            V: 0,
-            VI: 0
+            V: 20000,
+            VI: 10000000
         },
         RESPIRATION: {
             I: 0,
@@ -232,14 +214,14 @@ module.exports = {
             I: 0,
         },
         ULTIMATE_WISDOM: {
-            I: 0,
-            II: 0,
-            III: 0,
-            IV: 0,
-            V: 0,
+            I: 100000,
+            II: 200000,
+            III: 400000,
+            IV: 800000,
+            V: 1600000,
         },
         TRUE_PROTECTION: {
-            I: 0,
+            I: 1000000,
         },
         THORNS: {
             I: 0,
@@ -257,16 +239,16 @@ module.exports = {
             III: 0,
             IV: 0,
             V: 0,
-            VI: 0,
-            VII: 0,
-            VIII: 0,
-            IX: 0,
-            X: 0
+            VI: 60000,
+            VII: 75000,
+            VIII: 100000,
+            IX: 250000,
+            X: 500000
         },
         SUGAR_RUSH: {
-            I: 0,
-            II: 0,
-            III: 0,
+            I: 1000000,
+            II: 2000000,
+            III: 4000000,
         },
     }
 

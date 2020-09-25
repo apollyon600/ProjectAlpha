@@ -11,6 +11,7 @@ class Command {
       this.autoTip = options.autoTip || false;
       this.userPermission = options.userPermission || "SEND_MESSAGES";
       this.botPermission = options.botPermission || "SEND_MESSAGES"
+      this.usage = options.usage || `alpha ${options.name ? options.name : "??"}`
     }
   }
   

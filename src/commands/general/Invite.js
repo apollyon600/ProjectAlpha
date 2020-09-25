@@ -5,7 +5,8 @@ class Invite extends Command {
         super(client, {
             name: "invite",
             aliases: ['links', 'support'],
-            description: "Invite Link for Project Alpha.",
+            description: "Resources of Project Alpha.",
+            usage: "alpha invite",
             category: "General",
             cooldown: 1000
         });
@@ -21,11 +22,14 @@ class Invite extends Command {
 **Support Server**:
 <https://discord.gg/PJy6YF4>
 
-**Webiste**:
+**Website**:
 <https://projectalpha.cc/>
 
 **Top.gg**
-<https://top.gg/bots/656739867404795934>`));
+<https://top.gg/bots/656739867404795934>
+
+**Github**
+https://github.com/apollyon600/ProjectAlpha`));
     }
 }
 

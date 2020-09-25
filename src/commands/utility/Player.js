@@ -18,6 +18,7 @@ class Player extends Command {
             aliases: ["players", "plr", "prof", "profile", "profiles"],
             description: "View a skyblock players profile.",
             category: "Utility",
+            usage: "alpha player [ign]",
             needsAPI: true,
             autoTip: true,
             cooldown: 10000

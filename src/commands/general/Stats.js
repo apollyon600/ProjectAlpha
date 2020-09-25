@@ -5,8 +5,9 @@ class Stats extends Command {
         super(client, {
             name: "stats",
             aliases: ["stat", "botinfo", "info", "information"],
-            description: "View commands of Project Alpha",
+            description: "Statistics of Project Alpha",
             category: "General",
+            usage: "alpha stats",
             autoTip: true,
             cooldown: 1000
         });
