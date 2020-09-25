@@ -80,6 +80,8 @@ class Networth extends Command {
                     let item_price = database[item_id] || 0;
                     if (!item_price || item_price <= 0) return;
 
+                    if (item.rarity.toLowerCase().includes("common")) return;
+
                     // Checking if the item is recombobulated.
                     let recombobulated = isRecombobulated(item);
                     if (recombobulated) item_price += RECOMB;
@@ -106,6 +108,7 @@ class Networth extends Command {
 
                     // Blacklisted Item
                     if (item_name.includes("SkyBlock Menu")) return;
+                    if (item.rarity.toLowerCase().includes("common")) return;
 
                     let item_id = item.tag.ExtraAttributes.id;
                     let item_price = item_name.includes("Midas") ? parseInt(item.tag.ExtraAttributes.winning_bid) : parseInt(database[item_id]);
